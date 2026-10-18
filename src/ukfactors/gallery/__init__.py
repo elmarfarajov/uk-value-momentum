@@ -22,6 +22,10 @@ DAYS: dict[int, str] = {
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 STOCKS = ["yahoo_ftse350_monthly.csv"]
+PORTS = [
+    f"exeter_{n}.zip"
+    for n in ("6ports_size_bm", "6ports_size_mom", "25ports_size_bm", "25ports_size_mom", "10ports_bm", "10ports_size")
+]
 
 
 @dataclass(frozen=True)
@@ -38,6 +42,7 @@ class Item:
 
 
 def items() -> tuple[Item, ...]:
+    from . import deepdive as d
     from . import foundation as f
 
     return (
@@ -111,6 +116,84 @@ def items() -> tuple[Item, ...]:
             "Momentum works in the UK and Europe, value in Japan",
             "Sharpe ratios of value and momentum in four stock markets.",
             f.uk_vs_world,
+            1,
+        ),
+        Item(
+            "factor-alphas.png",
+            "Value is a premium once momentum is held constant",
+            "CAPM and multi-factor alphas with Newey-West intervals.",
+            d.factor_alphas,
+            1,
+        ),
+        Item(
+            "value-momentum-mix.png",
+            "Half value, half momentum",
+            "Sharpe ratio and drawdown of the value-momentum mix by weight.",
+            d.value_momentum_mix,
+            1,
+        ),
+        Item(
+            "rolling-correlation.png",
+            "The hedge has held for forty years",
+            "Three-year rolling correlations of value and momentum.",
+            d.rolling_correlation,
+            1,
+        ),
+        Item(
+            "portfolio-grids.png",
+            "Twenty-five UK portfolios",
+            "Exeter's 5x5 sorts on size and value, and on size and momentum.",
+            d.portfolio_grids,
+            1,
+            tuple(RAW + PORTS),
+        ),
+        Item(
+            "factor-legs.png",
+            "Momentum is a story about losers",
+            "The six 2x3 portfolios behind HML and UMD.",
+            d.factor_legs,
+            1,
+            tuple(RAW + PORTS),
+        ),
+        Item(
+            "deciles.png",
+            "Value sorted finely",
+            "Ten portfolios on book-to-market and on size.",
+            d.deciles,
+            1,
+            tuple(RAW + PORTS),
+        ),
+        Item("calendar-years.png", "One cell per year", "Calendar-year returns of every factor, 1972-2025.", d.calendar_years, 1),
+        Item("start-date.png", "When you start counting", "Sharpe ratio from each start year to 2026.", d.start_date, 1),
+        Item(
+            "sharpe-bootstrap.png", "How sure can we be?", "Bootstrap distributions of every Sharpe ratio.", d.sharpe_bootstrap, 1
+        ),
+        Item(
+            "autocorrelation.png",
+            "Factor returns remember last month",
+            "Autocorrelations and Ljung-Box tests.",
+            d.autocorrelation,
+            1,
+        ),
+        Item(
+            "drawdown-episodes.png",
+            "Five worst losing spells",
+            "Peak, trough and recovery of the deepest drawdowns.",
+            d.drawdown_episodes,
+            1,
+        ),
+        Item(
+            "rates-and-currency.png",
+            "Two currencies, two risk-free rates",
+            "UK and US risk-free rates, and the pound in dollars.",
+            d.rates_and_currency,
+            1,
+        ),
+        Item(
+            "market-states.png",
+            "Momentum earns its keep when the market falls",
+            "Factor returns in up and down markets.",
+            d.market_states,
             1,
         ),
     )

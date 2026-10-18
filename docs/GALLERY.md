@@ -48,3 +48,55 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Momentum works in the UK and Europe, value in Japan](images/uk-vs-world.png)
 
+**Value is a premium once momentum is held constant** - CAPM and multi-factor alphas with Newey-West intervals.
+
+![Value is a premium once momentum is held constant](images/factor-alphas.png)
+
+**Half value, half momentum** - Sharpe ratio and drawdown of the value-momentum mix by weight.
+
+![Half value, half momentum](images/value-momentum-mix.png)
+
+**The hedge has held for forty years** - Three-year rolling correlations of value and momentum.
+
+![The hedge has held for forty years](images/rolling-correlation.png)
+
+**Twenty-five UK portfolios** - Exeter's 5x5 sorts on size and value, and on size and momentum.
+
+![Twenty-five UK portfolios](images/portfolio-grids.png)
+
+**Momentum is a story about losers** - The six 2x3 portfolios behind HML and UMD.
+
+![Momentum is a story about losers](images/factor-legs.png)
+
+**Value sorted finely** - Ten portfolios on book-to-market and on size.
+
+![Value sorted finely](images/deciles.png)
+
+**One cell per year** - Calendar-year returns of every factor, 1972-2025.
+
+![One cell per year](images/calendar-years.png)
+
+**When you start counting** - Sharpe ratio from each start year to 2026.
+
+![When you start counting](images/start-date.png)
+
+**How sure can we be?** - Bootstrap distributions of every Sharpe ratio.
+
+![How sure can we be?](images/sharpe-bootstrap.png)
+
+**Factor returns remember last month** - Autocorrelations and Ljung-Box tests.
+
+![Factor returns remember last month](images/autocorrelation.png)
+
+**Five worst losing spells** - Peak, trough and recovery of the deepest drawdowns.
+
+![Five worst losing spells](images/drawdown-episodes.png)
+
+**Two currencies, two risk-free rates** - UK and US risk-free rates, and the pound in dollars.
+
+![Two currencies, two risk-free rates](images/rates-and-currency.png)
+
+**Momentum earns its keep when the market falls** - Factor returns in up and down markets.
+
+![Momentum earns its keep when the market falls](images/market-states.png)
+
