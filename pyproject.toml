@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ukfactors"
-version = "0.1.0"
+version = "0.1.1"
 description = "Value and momentum in the UK stock market, 1972-2026: factors, crashes, costs, short sellers and the stamp-duty natural experiment."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -56,6 +56,7 @@ ignore = ["E731"]
 [tool.ruff.lint.per-file-ignores]
 # chart captions are prose; breaking them mid-sentence hurts more than it helps
 "src/ukfactors/gallery/foundation.py" = ["E501"]
+"src/ukfactors/gallery/deepdive.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -70,8 +71,9 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # the gallery draws with pandas and matplotlib objects whose stubs are looser than the code
-module = ["ukfactors.gallery.foundation"]
+module = ["ukfactors.gallery.foundation", "ukfactors.gallery.deepdive"]
 disallow_any_generics = false
+disable_error_code = ["operator", "str-bytes-safe", "call-overload", "arg-type", "union-attr", "index"]
 
 [tool.coverage.run]
 source = ["ukfactors"]

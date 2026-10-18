@@ -27,9 +27,17 @@ gilt crisis, machine learning, and a final working paper.
 * **Exeter's files are not its paper:** momentum averages 0.99% a month in the files against
   0.77% in Gregory et al. (2013).
 * Free stock data is survivor data: today's FTSE 350 "beat" the market by 7.7% a year.
+* **Value is a premium once momentum is held constant:** its alpha rises from 2.2% (*t* = 0.8)
+  to 7.6% (*t* = 3.5), and HML Devil's from 2.4% to 10.0% (*t* = 4.8).
+* Momentum is a story about losers and small firms: small past losers earned 1.1% a year over
+  cash for 36 years; momentum among small firms earned 14.8% (*t* = 5.2).
+* Momentum and quality pay when the market falls (17.8% and 19.4% a year in down months).
+* Value's Sharpe ratio is negative for every start year from 2004 to 2014.
+
+![Value is a premium once momentum is held constant](docs/images/factor-alphas.png)
 
 Read the full note: [Fifty-four years of UK factors](docs/notes/fifty-four-years-of-uk-factors.md).
-All charts: [GALLERY.md](docs/GALLERY.md). Checks: [VALIDATION.md](docs/VALIDATION.md).
+The note runs to about twenty pages, with 24 charts and 20 tables. All charts: [GALLERY.md](docs/GALLERY.md). Thirteen checks: [VALIDATION.md](docs/VALIDATION.md). Decisions: [docs/adr](docs/adr).
 
 ## Data, honestly
 
@@ -65,8 +73,9 @@ src/ukfactors/
   data/          store (manifest, hashes), aqr, exeter, fred, yahoo
   panel.py       one monthly panel in sterling (dollar-to-sterling conversion)
   stats.py       Newey-West, Lo (2002) Sharpe SE, stationary bootstrap, drawdowns
+  analysis.py    alphas with NW errors, the value-momentum mix, portfolio grids, drawdown episodes, ACF
   survivorship.py  cleaning Yahoo's unit flips, 12-1 momentum, the survivorship bias
-  validation.py  nine checks against independent methods and published numbers
+  validation.py  thirteen checks against independent methods and published numbers
   gallery/       every chart, registered so the gallery page and the images cannot drift
 docs/notes/      one methodology note per day
 docs/adr/        architecture decision records
