@@ -10,7 +10,7 @@ from ukfactors.validation import run_validation, to_markdown
 
 def test_gallery_registry_is_complete_and_unique() -> None:
     items = gallery.items()
-    assert len(items) == 11
+    assert len(items) == 24
     assert len({i.filename for i in items}) == len(items)
     assert all(i.day in gallery.DAYS for i in items)
     assert all(i.filename.endswith(".png") and i.title and i.description for i in items)
@@ -29,20 +29,22 @@ def test_gallery_skips_without_data(no_data: Path, capsys: pytest.CaptureFixture
 
 
 def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path) -> None:
-    from ukfactors.gallery import foundation
+    from ukfactors.gallery import deepdive, foundation
 
     foundation._panel.cache_clear()
+    deepdive._ports.cache_clear()
     written = gallery.build(tmp_path)
     foundation._panel.cache_clear()
-    assert len(written) == 11
+    deepdive._ports.cache_clear()
+    assert len(written) == 24
     assert all(p.stat().st_size > 20_000 for p in written)
 
 
 def test_validation_without_data_skips_rather_than_fails(no_data: Path) -> None:
     results = run_validation(fast=True)
     assert set(results["status"]) <= {"PASS", "SKIP"}
-    assert (results["status"] == "SKIP").sum() == 3
-    assert (results["status"] == "PASS").sum() == 6
+    assert (results["status"] == "SKIP").sum() == 4
+    assert (results["status"] == "PASS").sum() == 9
     md = to_markdown(results)
     assert md.count("\n") == len(results) + 1
 
@@ -51,6 +53,7 @@ def test_validation_with_synthetic_data_runs_the_data_checks(use_data: Path) -> 
     results = run_validation(fast=True).set_index("check")
     assert results.loc["AQR converted to sterling", "status"] == "PASS"
     assert results.loc["Two sources agree on momentum", "status"] == "PASS"
+    assert results.loc["Exeter's factors are their portfolios", "status"] == "PASS"
     assert results.loc["Exeter market reproduces the published table", "status"] in {"PASS", "FAIL"}  # synthetic numbers
 
 

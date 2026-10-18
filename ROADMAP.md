@@ -6,7 +6,7 @@ validation check or more, and decision records.
 
 | Day | Release | Topic | Question |
 |---|---|---|---|
-| 1 | v0.1.0 | **Fifty-four years of UK factors** ✅ | What have value and momentum earned since 1972, and do two independent sources agree? |
+| 1 | v0.1.0, v0.1.1 | **Fifty-four years of UK factors** ✅ (extended) | What have value and momentum earned since 1972, and do two independent sources agree? |
 | 2 | v0.2.0 | Momentum's anatomy | Formation and holding periods, the skip month, residual momentum, market states, seasonality |
 | 3 | v0.3.0 | Industry momentum and sector rotation | Is UK momentum an industry effect (Moskowitz-Grinblatt)? |
 | 4 | v0.4.0 | Time-series momentum | Trend following on UK equity, gilts and sterling (Moskowitz-Ooi-Pedersen) |

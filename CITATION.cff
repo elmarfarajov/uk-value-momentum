@@ -4,7 +4,7 @@ title: "uk-value-momentum: value and momentum in the UK stock market, 1972-2026"
 authors:
   - family-names: Farajov
     given-names: Elmar
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-10-18
 license: MIT
 repository-code: "https://github.com/elmarfarajov/uk-value-momentum"
