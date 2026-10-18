@@ -78,6 +78,80 @@ def write_data(root: Path, seed: int = 0) -> dict[str, pd.Series]:
         z.writestr("monthlyfactors.csv", ex.to_csv(index=False))
     (root / "exeter_monthlyfactors.zip").write_bytes(buffer.getvalue())
 
+    # Exeter's sorted portfolios: total returns, the six 2x3 consistent with the factors above
+    month = ex["month"]
+    rf_ex = ex["rf"].to_numpy()
+    mkt = ex["rm"].to_numpy()
+    m = idx.size
+
+    def zipped(member: str, frame: pd.DataFrame, name: str) -> None:
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            z.writestr(
+                member, pd.concat([month.reset_index(drop=True), frame.reset_index(drop=True)], axis=1).to_csv(index=False)
+            )
+        (root / f"exeter_{name}.zip").write_bytes(buf.getvalue())
+
+    for name, factor, member in (
+        ("6ports_size_bm", "hml", "vw_sizebm_6groups.csv"),
+        ("6ports_size_mom", "umd", "vw_sizemom_6groups.csv"),
+    ):
+        f = ex[factor].to_numpy()
+        smb = ex["smb"].to_numpy()
+        base = mkt + rng.normal(0, 0.01, (3, m))
+        six = pd.DataFrame(
+            {
+                "SL": mkt + smb / 2 - f / 2,
+                "SM": base[1] + smb / 2,
+                "SH": mkt + smb / 2 + f / 2,
+            }
+        )
+        six["BL"] = six["SL"] - smb
+        six["BM"] = six["SM"] - smb
+        six["BH"] = six["SH"] - smb
+        # by construction mean(S) - mean(B) = smb and ((SH + BH) - (SL + BL)) / 2 = f
+        zipped(member, six, name)
+    for name, member in (
+        ("25ports_size_bm", "vw_sizebm_25groups.csv"),
+        ("25ports_size_mom", "vw_sizemom_25groups.csv"),
+    ):
+        cols = [
+            "SL",
+            "S2",
+            "S3",
+            "S4",
+            "SH",
+            "S2L",
+            "S22",
+            "S23",
+            "S24",
+            "S2H",
+            "M3L",
+            "M32",
+            "M33",
+            "M34",
+            "M3H",
+            "B4L",
+            "B42",
+            "B43",
+            "B44",
+            "B4H",
+            "BL",
+            "B2",
+            "B3",
+            "B4",
+            "BH",
+        ]
+        tilt = np.tile(np.linspace(-0.001, 0.002, 5), 5)
+        frame = pd.DataFrame(mkt[:, None] + rf_ex[:, None] * 0 + tilt + rng.normal(0, 0.02, (m, 25)), columns=cols)
+        zipped(member, frame, name)
+    for name, member, prefix in (("10ports_bm", "vw_bm_10groups.csv", "V"), ("10ports_size", "vw_size_10groups.csv", "S")):
+        frame = pd.DataFrame(
+            mkt[:, None] + np.linspace(-0.001, 0.003, 10) + rng.normal(0, 0.02, (m, 10)),
+            columns=[f"{prefix}{k}" for k in range(1, 11)],
+        )
+        zipped(member, frame, name)
+
     # FRED: the rate monthly at the first of each month, the exchange rate daily with "." for holidays
     first = MONTHS - pd.offsets.MonthBegin(1)
     pd.DataFrame({"observation_date": first.strftime("%Y-%m-%d"), "IR3TIB01GBM156N": rf_uk_annual.to_numpy()}).to_csv(
