@@ -10,6 +10,6 @@ htmlcov/
 dist/
 build/
 reports/
-data/
+/data/
 *.prof
 prof.out
