@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from . import stats, survivorship
+from . import analysis, stats, survivorship
 from .data import store
 
 Result = tuple[str, str, str, bool | None]  # reference, result, error, passed (None: skipped)
@@ -189,15 +189,74 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
             c > 0.9,
         )
 
+    def regression_vs_statsmodels() -> Result:
+        try:
+            import statsmodels.api as sm
+        except ImportError:
+            return "statsmodels OLS, HAC (Bartlett) errors", "needs statsmodels", "-", None
+        rng = np.random.default_rng(7)
+        x = pd.DataFrame(rng.normal(0, 0.04, (480, 3)), columns=["a", "b", "c"])
+        y = pd.Series(0.004 + x @ np.array([0.3, -0.5, 0.1]) + _ar1(480, 0.3, 0.0, 0.02, rng))
+        ours = analysis.regress(y, x)
+        fit = sm.OLS(y, sm.add_constant(x)).fit(cov_type="HAC", cov_kwds={"maxlags": stats.nw_lags(480), "use_correction": False})
+        gap = float(max(np.max(np.abs(ours.coef - fit.params.to_numpy())), np.max(np.abs(ours.tstat - fit.tvalues.to_numpy()))))
+        return "statsmodels OLS with three regressors, HAC errors", "coefficients and t-statistics", f"{gap:.1e}", gap < 1e-8
+
+    def acf_vs_statsmodels() -> Result:
+        try:
+            from statsmodels.tsa.stattools import acf as sm_acf
+        except ImportError:
+            return "statsmodels acf", "needs statsmodels", "-", None
+        x = pd.Series(_ar1(600, 0.4, 0.0, 0.03, np.random.default_rng(8)))
+        gap = float(np.max(np.abs(analysis.acf(x, 24).to_numpy() - sm_acf(x, nlags=24, fft=False)[1:])))
+        return "statsmodels acf, lags 1-24", "AR(1) phi = 0.4", f"{gap:.1e}", gap < 1e-12
+
+    def tangency_vs_grid() -> Result:
+        rng = np.random.default_rng(9)
+        z = rng.multivariate_normal([0.003, 0.006], [[0.0016, -0.0009], [-0.0009, 0.0020]], 600)
+        a, b = pd.Series(z[:, 0]), pd.Series(z[:, 1])
+        w = analysis.tangency_weight(a, b)
+        grid = analysis.mix_frontier(a, b, np.linspace(0, 1, 10001))
+        best = float(grid.index.to_numpy()[int(np.argmax(grid["sharpe"].to_numpy()))])
+        return (
+            "brute-force search over 10,001 weights",
+            f"closed form {w:.4f}, search {best:.4f}",
+            f"{abs(w - best):.1e}",
+            abs(w - best) < 2e-4,
+        )
+
+    def exeter_factors_rebuild() -> Result:
+        names = ["exeter_monthlyfactors.zip", "exeter_6ports_size_bm.zip", "exeter_6ports_size_mom.zip"]
+        if not store.available(names):
+            return "Exeter's six 2x3 portfolios", "needs local data", "-", None
+        from .data import exeter
+
+        f = exeter.factors()
+        gaps = []
+        for kind, ports in (("HML", "6ports_size_bm"), ("SMB", "6ports_size_bm"), ("UMD", "6ports_size_mom")):
+            rebuilt = analysis.rebuild_factor(exeter.portfolios(ports), kind)
+            j = pd.concat([rebuilt, f[kind]], axis=1).dropna()
+            gaps.append(float((j.iloc[:, 0] - j.iloc[:, 1]).abs().max()))
+        return (
+            "HML, SMB and UMD rebuilt from the six portfolios",
+            f"max monthly gap HML {gaps[0]:.1e}, SMB {gaps[1]:.1e}, UMD {gaps[2]:.1e}",
+            f"{max(gaps):.1e}",
+            max(gaps) < 1e-6,
+        )
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
     add("Statistics", "Maximum drawdown", drawdown_brute_force)
+    add("Statistics", "Factor regressions against statsmodels", regression_vs_statsmodels)
+    add("Statistics", "Autocorrelations against statsmodels", acf_vs_statsmodels)
+    add("Statistics", "Maximum-Sharpe mix weight", tangency_vs_grid)
     add("Data", "Pence/pound flips are caught, clean series kept", unit_flips)
     add("Data", "Momentum signal has no look-ahead", no_look_ahead)
     add("Data", "Exeter market reproduces the published table", exeter_market_reproduces_paper)
     add("Data", "AQR converted to sterling", sterling_conversion)
     add("Data", "Two sources agree on momentum", sources_agree_on_momentum)
+    add("Data", "Exeter's factors are their portfolios", exeter_factors_rebuild)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 
