@@ -19,6 +19,7 @@ from .style import save
 
 DAYS: dict[int, str] = {
     1: "Fifty-four years of UK factors",
+    2: "The anatomy of momentum",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 STOCKS = ["yahoo_ftse350_monthly.csv"]
@@ -41,7 +42,12 @@ class Item:
         return store.available(list(self.requires))
 
 
+S = tuple(RAW + STOCKS)
+P = tuple(RAW + PORTS)
+
+
 def items() -> tuple[Item, ...]:
+    from . import anatomy as a
     from . import deepdive as d
     from . import foundation as f
 
@@ -195,6 +201,161 @@ def items() -> tuple[Item, ...]:
             "Factor returns in up and down markets.",
             d.market_states,
             1,
+        ),
+        Item(
+            "jt-grid.png",
+            "Jegadeesh and Titman in London",
+            "Mean and Sharpe ratio of every J x K momentum strategy.",
+            a.jt_grid,
+            2,
+            S,
+        ),
+        Item(
+            "skip-and-reversal.png",
+            "Why momentum skips a month",
+            "The skip month and short-term reversal.",
+            a.skip_and_reversal,
+            2,
+            S,
+        ),
+        Item(
+            "event-time.png",
+            "A few good months, then years of giving back",
+            "Winners minus losers for 60 months after formation.",
+            a.event_time,
+            2,
+            S,
+        ),
+        Item(
+            "intermediate-vs-recent.png",
+            "Recent or intermediate momentum",
+            "Months t-12 to t-7 against t-6 to t-2.",
+            a.intermediate_vs_recent,
+            2,
+            S,
+        ),
+        Item(
+            "residual-momentum.png",
+            "Residual momentum",
+            "Raw against residual momentum: growth and drawdowns.",
+            a.residual_momentum,
+            2,
+            S,
+        ),
+        Item(
+            "residual-exposures.png",
+            "Raw momentum bets on the market",
+            "Rolling market beta of raw and residual momentum.",
+            a.residual_exposures,
+            2,
+            S,
+        ),
+        Item(
+            "high-vs-momentum.png",
+            "Nearness to the 52-week high",
+            "The 52-week-high strategy against 12-1 momentum.",
+            a.high_vs_momentum,
+            2,
+            S,
+        ),
+        Item(
+            "momentum-market-states.png",
+            "Momentum after rising and falling markets",
+            "Momentum returns by the market's past 24 months.",
+            a.market_states,
+            2,
+            S,
+        ),
+        Item(
+            "conditional-beta.png",
+            "Momentum's beta follows the market's past",
+            "Rolling beta of UMD against the market's past return.",
+            a.conditional_beta,
+            2,
+        ),
+        Item(
+            "calendar.png",
+            "UK momentum loses in April",
+            "Mean momentum return by calendar month, 1972-2026.",
+            a.calendar_chart,
+            2,
+        ),
+        Item(
+            "april-legs.png",
+            "In April the losers rebound",
+            "Exeter's winners and losers in April and other months.",
+            a.april_legs,
+            2,
+            P,
+        ),
+        Item(
+            "calendar-sources.png",
+            "April in every source",
+            "Calendar-month means of five momentum series.",
+            a.calendar_sources,
+            2,
+            S,
+        ),
+        Item(
+            "momentum-size.png", "Momentum among small and big companies", "Exeter's small and big momentum.", a.size_chart, 2, P
+        ),
+        Item("momentum-deciles.png", "Ten momentum deciles", "Next-month returns of 12-1 deciles.", a.decile_returns, 2, S),
+        Item(
+            "momentum-legs.png",
+            "Which leg earns the premium",
+            "Long and short legs of momentum.",
+            a.legs_chart,
+            2,
+            tuple(RAW + STOCKS + PORTS),
+        ),
+        Item(
+            "turnover.png",
+            "Momentum trades a lot",
+            "Turnover and break-even trading costs by holding period.",
+            a.turnover_chart,
+            2,
+            S,
+        ),
+        Item(
+            "persistence.png",
+            "Winners stay winners for months",
+            "Quintile transition matrices at one and twelve months.",
+            a.persistence,
+            2,
+            S,
+        ),
+        Item("spells.png", "How long a stock stays a winner", "Spells in the winner and loser deciles.", a.spells_chart, 2, S),
+        Item(
+            "sector-composition.png",
+            "Momentum is partly an industry bet",
+            "Industry shares of the winner and loser deciles.",
+            a.sector_composition,
+            2,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "spread-timing.png",
+            "The formation gap",
+            "Next-month momentum against the winners-losers formation gap.",
+            a.spread_timing,
+            2,
+            S,
+        ),
+        Item(
+            "sources-compared.png",
+            "Survivors against the factors",
+            "Survivor-built momentum against AQR and Exeter.",
+            a.sources_compared,
+            2,
+            S,
+        ),
+        Item(
+            "rolling-stability.png",
+            "Five years with nothing to show",
+            "Rolling five-year Sharpe ratios of momentum variants.",
+            a.rolling_stability,
+            2,
+            S,
         ),
     )
 
