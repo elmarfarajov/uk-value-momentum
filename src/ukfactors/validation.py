@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from . import analysis, stats, survivorship
+from . import analysis, momentum, stats, survivorship
 from .data import store
 
 Result = tuple[str, str, str, bool | None]  # reference, result, error, passed (None: skipped)
@@ -244,6 +244,132 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
             max(gaps) < 1e-6,
         )
 
+    def jt_vs_brute_force() -> Result:
+        rng = np.random.default_rng(31)
+        ret = pd.DataFrame(rng.normal(0.01, 0.08, (80, 60)), index=pd.date_range("2000-01-31", periods=80, freq="ME"))
+        ret.iloc[5:15, 3] = np.nan  # a stock missing for a while
+        j, k, skip = 6, 3, 1
+        fast_ = momentum.jt(ret, j, k, skip).wml
+        r = ret.to_numpy()
+        n = r.shape[0]
+        sig = np.full_like(r, np.nan)
+        for h in range(n):
+            lo, hi = h - j - skip, h - skip  # months lo .. hi - 1
+            if lo >= 0:
+                window = r[lo:hi]
+                ok = np.isfinite(window).all(axis=0)
+                sig[h, ok] = np.prod(1 + window[:, ok], axis=0) - 1
+        slow = np.full(n, np.nan)
+        for m in range(n):
+            spreads = []
+            for c in range(m - k + 1, m + 1):
+                if c < 0 or np.isfinite(sig[c]).sum() < 30:
+                    break
+                s_ = sig[c]
+                ranks = pd.Series(s_).rank(pct=True).to_numpy()
+                win = ranks > 0.9
+                lose = ranks <= 0.1
+                rw, rl = r[m][win], r[m][lose]
+                spreads.append(np.nanmean(rw) - np.nanmean(rl))
+            if len(spreads) == k:
+                slow[m] = float(np.mean(spreads))
+        gap = float(np.nanmax(np.abs(fast_.to_numpy() - slow)))
+        same = bool(np.array_equal(np.isfinite(fast_.to_numpy()), np.isfinite(slow)))
+        return (
+            "a loop over cohorts and months, written separately",
+            "J = 6, K = 3, 60 stocks, 80 months",
+            f"{gap:.1e}",
+            gap < 1e-12 and same,
+        )
+
+    def residual_vs_statsmodels() -> Result:
+        try:
+            import statsmodels.api as sm
+        except ImportError:
+            return "statsmodels OLS residuals", "needs statsmodels", "-", None
+        rng = np.random.default_rng(32)
+        idx = pd.date_range("2000-01-31", periods=60, freq="ME")
+        fac = pd.DataFrame(rng.normal(0, 0.04, (60, 3)), index=idx, columns=["m", "s", "v"])
+        ret = pd.DataFrame(fac.to_numpy() @ rng.normal(1, 0.5, (3, 5)) + rng.normal(0, 0.05, (60, 5)), index=idx)
+        sig = momentum.residual_signal(ret, fac, window=36, j=11, skip=1)
+        h = 50
+        y = ret.iloc[h - 36 : h, 2]
+        fit = sm.OLS(y.to_numpy(), sm.add_constant(fac.iloc[h - 36 : h].to_numpy())).fit()
+        form = fit.resid[36 - 12 : 36 - 1]
+        expected = form.sum() / form.std(ddof=1)
+        gap = abs(float(sig.to_numpy()[h, 2]) - expected)
+        return "statsmodels OLS on the same 36 months, residuals t-12 to t-2", "one stock, one month", f"{gap:.1e}", gap < 1e-10
+
+    def signals_no_look_ahead() -> Result:
+        rng = np.random.default_rng(33)
+        idx = pd.date_range("2000-01-31", periods=60, freq="ME")
+        ret = pd.DataFrame(rng.normal(0.01, 0.06, (60, 8)), index=idx)
+        mkt = pd.Series(rng.normal(0.006, 0.04, 60), index=idx)
+        t = 40
+        later = ret.copy()
+        later.iloc[t:] = 0.5
+        mlater = mkt.copy()
+        mlater.iloc[t:] = -0.5
+        same = [
+            np.allclose(momentum.formation_return(ret, 11, 1).iloc[t], momentum.formation_return(later, 11, 1).iloc[t]),
+            np.allclose(momentum.high_ratio(ret).iloc[t], momentum.high_ratio(later).iloc[t]),
+        ]
+        past = pd.Series(np.log1p(mkt.to_numpy()), index=idx).rolling(24).sum().shift(1)
+        past_l = pd.Series(np.log1p(mlater.to_numpy()), index=idx).rolling(24).sum().shift(1)
+        same.append(bool(np.isclose(past.iloc[t], past_l.iloc[t])))
+        return (
+            "signals at t unchanged when months t onwards change",
+            "12-1, 52-week high, market state",
+            f"{sum(same)}/3 unchanged",
+            all(same),
+        )
+
+    def event_time_identity() -> Result:
+        rng = np.random.default_rng(34)
+        ret = pd.DataFrame(rng.normal(0.01, 0.08, (90, 50)), index=pd.date_range("2000-01-31", periods=90, freq="ME"))
+        sig = momentum.formation_return(ret, 11, 1)
+        e = momentum.event_time(ret, sig, horizon=1)
+        k1 = momentum.overlapping(ret, sig, 1).wml.dropna()
+        gap = abs(float(e["mean"].to_numpy()[0]) - float(k1.mean()))
+        return "event time, month 1 = the K = 1 strategy's mean", "50 stocks, 90 months", f"{gap:.1e}", gap < 1e-12
+
+    def stock_returns_clean() -> Result:
+        if not store.available(["yahoo_ftse350_monthly.csv"]):
+            return "pooled autocorrelation of monthly stock returns", "needs local data", "-", None
+        from .data import yahoo
+
+        ret = survivorship.clean(yahoo.prices(), pd.Timestamp("2026-09-30")).returns
+        rho = []
+        for lag in (1, 2, 3):
+            j_ = pd.concat([ret.shift(lag).stack(), ret.stack()], axis=1).dropna()
+            rho.append(float(j_.corr().iloc[0, 1]))
+        worst = max(abs(x) for x in rho)
+        return (
+            "real monthly returns are close to serially uncorrelated (Yahoo's monthly bars gave -0.14 and +0.32)",
+            f"lags 1-3: {rho[0]:+.3f}, {rho[1]:+.3f}, {rho[2]:+.3f}",
+            f"max {worst:.3f}",
+            worst < 0.05,
+        )
+
+    def unit_flip_pairs() -> Result:
+        rng = np.random.default_rng(35)
+        n = 200
+        prices = pd.DataFrame(np.exp(np.cumsum(rng.normal(0.006, 0.07, (n, 30)), axis=0)) * 100.0)
+        for c in range(5):  # five-fold unit flips lasting a few months, then reversing
+            start = int(rng.integers(20, 150))
+            prices.iloc[start : start + int(rng.integers(1, 30)), c] *= 5.0
+        prices.iloc[100:, 10] *= 0.25  # a genuine 75% crash that never recovers
+        prices.iloc[60:, 11] *= 2.8  # a genuine near-tripling that holds
+        cleaned = survivorship.clean(prices)
+        caught = {str(i) for i in range(5)} <= set(cleaned.excluded)
+        kept = not ({"10", "11"} & set(cleaned.excluded))
+        return (
+            "five-fold flips that reverse are dropped; a lasting crash and rally are kept",
+            f"excluded {cleaned.excluded}",
+            "exact" if caught and kept else "mismatch",
+            caught and kept,
+        )
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -257,6 +383,12 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Data", "AQR converted to sterling", sterling_conversion)
     add("Data", "Two sources agree on momentum", sources_agree_on_momentum)
     add("Data", "Exeter's factors are their portfolios", exeter_factors_rebuild)
+    add("Data", "Stock returns are serially clean", stock_returns_clean)
+    add("Data", "Unit flips that reverse are caught", unit_flip_pairs)
+    add("Momentum", "Jegadeesh-Titman portfolios against a brute-force loop", jt_vs_brute_force)
+    add("Momentum", "Residual momentum against statsmodels", residual_vs_statsmodels)
+    add("Momentum", "Signals use only the past", signals_no_look_ahead)
+    add("Momentum", "Event time agrees with the K = 1 strategy", event_time_identity)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 
