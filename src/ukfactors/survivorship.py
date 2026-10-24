@@ -28,14 +28,28 @@ class Cleaning:
     kept: int
 
 
-def clean(prices: pd.DataFrame, last_complete: pd.Timestamp | None = None, up: float = 4.0, down: float = -0.8) -> Cleaning:
-    """Monthly returns of the series that never jump by more than ``up`` (+400%) or fall below ``down`` (-80%) in a month.
+def clean(
+    prices: pd.DataFrame,
+    last_complete: pd.Timestamp | None = None,
+    up: float = 3.0,
+    down: float = -0.8,
+    flip: float = 3.0,
+    window: int = 36,
+) -> Cleaning:
+    """Monthly returns of the series with no impossible move and no unit flip, each dropped whole.
 
-    Yahoo's London prices flip between pence and pounds (a factor of 100) and, for many
-    investment trusts, by a factor of 10, often month after month. Repairing such series means
-    guessing which months are wrong; a series with even one impossible move is dropped whole
-    instead, and the count is reported. A genuine five-fold month or a fall of more than 80% in
-    a FTSE 350 company that survived to today is rare enough to lose.
+    Two rules (ADR 0003, ADR 0011):
+
+    * **impossible moves**: any month above ``up`` (+300%) or below ``down`` (-80%). Yahoo's London
+      prices flip between pence and pounds (a factor of 100), by a factor of 10 for some trusts, and
+      once by a factor of 4.6 that never reverses (an unadjusted consolidation);
+    * **unit flips**: two months within ``window`` months whose returns are each at least a factor
+      ``flip`` in size, of opposite sign, and cancel to within a quarter of the larger. A price that
+      jumps five-fold and falls back five-fold is a change of units, not two trades; a genuine crash
+      or rally does not reverse itself exactly.
+
+    Repairing such series would mean guessing which months are wrong, so they are dropped whole and
+    counted. A FTSE 350 survivor with a genuine move of this kind is rare enough to lose.
     """
     px = prices.sort_index()
     if last_complete is not None:
@@ -43,6 +57,21 @@ def clean(prices: pd.DataFrame, last_complete: pd.Timestamp | None = None, up: f
     px = px.where(px > 0)
     ret = px.pct_change(fill_method=None)
     bad = ((ret > up) | (ret < down)).any()
+    log = np.log1p(ret)
+    big = np.log(flip)
+    for col in ret.columns:
+        if bad[col]:
+            continue
+        x = log[col].dropna()
+        hits = x[x.abs() >= big]
+        if hits.size < 2:
+            continue
+        pos = {d: i for i, d in enumerate(x.index)}
+        for a, b in zip(hits.index[:-1], hits.index[1:], strict=True):
+            va, vb = float(hits[a]), float(hits[b])
+            if va * vb < 0 and pos[b] - pos[a] <= window and abs(va + vb) <= 0.25 * max(abs(va), abs(vb)):
+                bad[col] = True
+                break
     dropped = list(bad[bad].index)
     return Cleaning(ret.drop(columns=dropped), sorted(str(c) for c in dropped), int((~bad).sum()))
 
