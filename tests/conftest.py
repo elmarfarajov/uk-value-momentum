@@ -173,6 +173,16 @@ def write_data(root: Path, seed: int = 0) -> dict[str, pd.Series]:
     ).loc["1999-01":]
     stocks.iloc[40:60, 0] /= 100.0  # a pence/pound flip, to be excluded
     stocks.to_csv(root / "yahoo_ftse350_monthly.csv")
+    industries = ["Mining", "Banks", "Media", "Software & Computer Services", "Tobacco", "Oil & Gas Producers"]
+    pd.DataFrame(
+        {
+            "ticker": [c[:-2] for c in stocks.columns],
+            "company": [f"Company {i}" for i in range(stocks.shape[1])],
+            "index": "ftse250",
+            "yahoo": stocks.columns,
+            "sector": [industries[i % len(industries)] for i in range(stocks.shape[1])],
+        }
+    ).to_csv(root / "ftse350_constituents.csv", index=False)
     return {"fx": fx, "rf_uk": rf_uk, "rf_us": rf_us, **{f"gbp_{c}": s for c, s in sterling.items()}}
 
 
