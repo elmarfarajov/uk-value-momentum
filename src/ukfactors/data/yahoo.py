@@ -6,8 +6,9 @@ anything an investor could have held. This module builds that sample on purpose:
 momentum strategy run on it with AQR's survivorship-free UK momentum over the same months
 measures how much the bias is worth.
 
-Constituents come from Wikipedia's FTSE 100 and FTSE 250 pages (CC BY-SA); prices are Yahoo
-Finance month-end closes adjusted for dividends and splits. Both are stored locally only.
+Constituents, with their FTSE Industry Classification Benchmark sector, come from Wikipedia's
+FTSE 100 and FTSE 250 pages (CC BY-SA); prices are Yahoo
+Finance daily closes adjusted for dividends and splits, sampled at month end. Both are stored locally only.
 """
 
 from __future__ import annotations
@@ -29,9 +30,11 @@ def _constituents_from(html: str, index: str) -> pd.DataFrame:
         cols = {str(c).lower(): c for c in table.columns}
         ticker = next((cols[c] for c in cols if c in ("ticker", "epic", "ticker symbol")), None)
         company = next((cols[c] for c in cols if c.startswith("company")), None)
+        sector = next((cols[c] for c in cols if "sector" in c), None)
         if ticker is not None and company is not None and len(table) > 50:
             out = pd.DataFrame({"ticker": table[ticker].astype(str).str.strip(), "company": table[company].astype(str)})
             out["index"] = index
+            out["sector"] = table[sector].astype(str).str.strip() if sector is not None else ""
             return out
     raise ValueError(f"no constituents table found for {index}")
 
@@ -57,12 +60,15 @@ def fetch_prices(root: Path | None = None, start: str = "1999-01-01") -> pd.Data
 
     base = root or store.data_root()
     tickers = pd.read_csv(base / CONSTITUENTS_FILE)["yahoo"].tolist()
-    raw = yf.download(tickers, start=start, interval="1mo", auto_adjust=True, progress=False, threads=True)
+    # Daily adjusted closes, sampled at each month's last trading day. Yahoo's own monthly bars apply
+    # dividend adjustments inconsistently, which shows up as spikes in ex-dividend months that reverse
+    # the month after (ADR 0011); daily closes do not have that defect.
+    raw = yf.download(tickers, start=start, interval="1d", auto_adjust=True, progress=False, threads=True)
     close = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw[["Close"]]
-    close.index = pd.to_datetime(close.index).tz_localize(None) + pd.offsets.MonthEnd(0)
-    close = close.groupby(level=0).last().dropna(how="all", axis=1)
+    close.index = pd.to_datetime(close.index).tz_localize(None)
+    close = close.resample("ME").last().dropna(how="all", axis=1)
     close.to_csv(base / PRICES_FILE)
-    store.record(PRICES_FILE, "Yahoo Finance via yfinance, monthly adjusted closes", base)
+    store.record(PRICES_FILE, "Yahoo Finance via yfinance, daily adjusted closes sampled at month end", base)
     return close
 
 

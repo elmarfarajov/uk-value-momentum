@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.2.0: The anatomy of momentum (Day 2)
+
+### Added
+
+* `ukfactors.momentum`: formation returns, Jegadeesh-Titman overlapping portfolios and the J x K
+  grid, event-time profiles, residual momentum (Blitz-Huij-Martens), the 52-week high, decile
+  returns, quintile transitions, spells, industry composition, the UK market's sterling total
+  return, market states (Cooper-Gutierrez-Hameed), conditional betas (Grundy-Martin), calendar-month
+  and seasonal-dummy regressions, predictive regressions, summaries.
+* `ukfactors.sectors`: ICB industries from Wikipedia's free-text sector labels; constituents now
+  carry their sector.
+* Twenty-two charts, the Day 2 note (19 tables), ADRs 0009-0011.
+* Six validation checks (19 in all): Jegadeesh-Titman portfolios against a brute-force loop,
+  residual momentum against statsmodels, signals that use only the past, event time against the
+  K = 1 strategy, serially clean stock returns, unit flips that reverse.
+* Eighteen tests (74 in all, 99% coverage).
+
+### Fixed
+
+* **Stock prices.** Yahoo's monthly bars mishandle dividend adjustments; prices are now daily
+  adjusted closes sampled at month end (ADR 0011).
+* **Cleaning.** Impossible-move ceiling +300% (was +400%), and unit flips of at least a factor of 3
+  that reverse within 36 months are caught. 22 series excluded, 327 kept (39 and 310 before).
+* **Day 1 corrected.** The survivors' premium is 4.0% a year (was 7.7%), and survivor momentum
+  earns 4.1% against AQR's 6.1% (was 6.8%); see the Errata in the Day 1 note. Factor-level results
+  are unchanged.
+* The 52-week-high ranking lost months to ties; ties are now broken by 12-1 momentum.
+* A sector rule matched "biotechnology" to Technology before Health Care.
+
 ## v0.1.1: Day 1 extended
 
 ### Added

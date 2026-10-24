@@ -19,9 +19,9 @@ in a small company.
 ## Decision
 
 1. **Any series with an impossible month is dropped whole.** That means a monthly return
-   above +400% or below −80%. No months are repaired. Of 349 series, 39 are dropped and 310
-   kept, and the count is reported in every chart that uses the sample. A FTSE 350 company that
-   survived to today and had a genuine five-fold month or an 80% fall is rare enough to lose.
+   above +400% or below −80% (tightened to +300%, plus a test for unit flips that reverse, in
+   ADR 0011). No months are repaired. Of 349 series, 22 are dropped and 327 kept under the
+   current rules, and the count is reported in every chart that uses the sample.
 2. **The incomplete month is cut.** Yahoo's last row is the current, unfinished month
    (October 2026). Analysis stops at the last complete month, September 2026.
 3. **The sample is used to measure survivorship bias, never as a substitute for AQR or
@@ -30,12 +30,12 @@ in a small company.
 
 ## Consequences
 
-* Survivors beat the market by **7.7% a year** from 2000 to 2026, which is the textbook
-  survivorship premium (Brown, Goetzmann, Ibbotson and Ross, 1992). Part of it is a size tilt,
-  because an equal-weighted FTSE 350 leans towards the FTSE 250.
-* Momentum on survivors earns **6.8%** a year against AQR's **6.1%** over the same 318
-  months, with a correlation of 0.77. The bias in a *long/short* strategy is small: survival
-  lifts the past losers and the past winners alike, and the difference nets most of it out.
+* Survivors beat the market by **4.0% a year** from 2000 to 2026 (7.7% before the data fix of
+  ADR 0011), the textbook survivorship premium (Brown, Goetzmann, Ibbotson and Ross, 1992).
+  Part of it is a size tilt, because an equal-weighted FTSE 350 leans towards the FTSE 250.
+* Momentum on survivors earns **4.1%** a year against AQR's **6.1%** over the same 318 months,
+  with a correlation of 0.83. The bias is negative: the losers that failed are missing, and those
+  left recovered, so the short leg loses money.
 * The validation suite injects ×10 and ×100 flips into synthetic series. It requires all 10
   corrupted series to be caught and none of 40 clean ones to be flagged.
 * Later days that need stock-level data must state this bias, or replace the sample.

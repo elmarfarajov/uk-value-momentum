@@ -100,3 +100,93 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Momentum earns its keep when the market falls](images/market-states.png)
 
+## Day 2: The anatomy of momentum
+
+**Jegadeesh and Titman in London** - Mean and Sharpe ratio of every J x K momentum strategy.
+
+![Jegadeesh and Titman in London](images/jt-grid.png)
+
+**Why momentum skips a month** - The skip month and short-term reversal.
+
+![Why momentum skips a month](images/skip-and-reversal.png)
+
+**A few good months, then years of giving back** - Winners minus losers for 60 months after formation.
+
+![A few good months, then years of giving back](images/event-time.png)
+
+**Recent or intermediate momentum** - Months t-12 to t-7 against t-6 to t-2.
+
+![Recent or intermediate momentum](images/intermediate-vs-recent.png)
+
+**Residual momentum** - Raw against residual momentum: growth and drawdowns.
+
+![Residual momentum](images/residual-momentum.png)
+
+**Raw momentum bets on the market** - Rolling market beta of raw and residual momentum.
+
+![Raw momentum bets on the market](images/residual-exposures.png)
+
+**Nearness to the 52-week high** - The 52-week-high strategy against 12-1 momentum.
+
+![Nearness to the 52-week high](images/high-vs-momentum.png)
+
+**Momentum after rising and falling markets** - Momentum returns by the market's past 24 months.
+
+![Momentum after rising and falling markets](images/momentum-market-states.png)
+
+**Momentum's beta follows the market's past** - Rolling beta of UMD against the market's past return.
+
+![Momentum's beta follows the market's past](images/conditional-beta.png)
+
+**UK momentum loses in April** - Mean momentum return by calendar month, 1972-2026.
+
+![UK momentum loses in April](images/calendar.png)
+
+**In April the losers rebound** - Exeter's winners and losers in April and other months.
+
+![In April the losers rebound](images/april-legs.png)
+
+**April in every source** - Calendar-month means of five momentum series.
+
+![April in every source](images/calendar-sources.png)
+
+**Momentum among small and big companies** - Exeter's small and big momentum.
+
+![Momentum among small and big companies](images/momentum-size.png)
+
+**Ten momentum deciles** - Next-month returns of 12-1 deciles.
+
+![Ten momentum deciles](images/momentum-deciles.png)
+
+**Which leg earns the premium** - Long and short legs of momentum.
+
+![Which leg earns the premium](images/momentum-legs.png)
+
+**Momentum trades a lot** - Turnover and break-even trading costs by holding period.
+
+![Momentum trades a lot](images/turnover.png)
+
+**Winners stay winners for months** - Quintile transition matrices at one and twelve months.
+
+![Winners stay winners for months](images/persistence.png)
+
+**How long a stock stays a winner** - Spells in the winner and loser deciles.
+
+![How long a stock stays a winner](images/spells.png)
+
+**Momentum is partly an industry bet** - Industry shares of the winner and loser deciles.
+
+![Momentum is partly an industry bet](images/sector-composition.png)
+
+**The formation gap** - Next-month momentum against the winners-losers formation gap.
+
+![The formation gap](images/spread-timing.png)
+
+**Survivors against the factors** - Survivor-built momentum against AQR and Exeter.
+
+![Survivors against the factors](images/sources-compared.png)
+
+**Five years with nothing to show** - Rolling five-year Sharpe ratios of momentum variants.
+
+![Five years with nothing to show](images/rolling-stability.png)
+

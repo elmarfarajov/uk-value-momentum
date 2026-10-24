@@ -368,9 +368,10 @@ def survivorship_bias() -> Figure:
         fig,
         "Free data remembers only the winners",
         f"Today's FTSE 350 companies, followed back to 1999, beat the UK market by {100 * b.survivors_premium:.1f}% a year on "
-        f"average - by {100 * gaps[0]:.0f}% a year in 1999-2007 and {100 * gaps[-1]:.0f}% since 2016: the further back, the "
+        f"average - by {100 * gaps[0]:.1f}% a year in 1999-2007 and {100 * gaps[-1]:.1f}% since 2016: the further back, the "
         f"bigger the bias. A momentum strategy on the same survivors earns {100 * b.momentum_survivors.mean() * 12:.1f}% a year "
-        f"against {100 * b.momentum_clean.mean() * 12:.1f}% for AQR's survivorship-free momentum: the bias hits both legs.",
+        f"against {100 * b.momentum_clean.mean() * 12:.1f}% for AQR's survivorship-free momentum: the losers that survived "
+        "rebounded, so survivorship makes momentum look weaker, not stronger.",
     )
     ax = fig.add_axes((0.05, 0.15, 0.42, 0.58))
     ax.plot((1 + j["survivors"]).cumprod(), color=PALETTE["accent"], lw=1.8, label="today's FTSE 350, equal-weighted")
@@ -380,13 +381,13 @@ def survivorship_bias() -> Figure:
     ax.legend(fontsize=8)
     ax2 = fig.add_axes((0.55, 0.15, 0.42, 0.58))
     ax2.plot((1 + b.momentum_survivors).cumprod(), color=PALETTE["accent"], lw=1.8, label="momentum on today's FTSE 350")
-    ax2.plot((1 + b.momentum_clean).cumprod(), color=PALETTE["red"], lw=1.8, label="AQR UK momentum (survivorship-free)")
+    ax2.plot((1 + b.momentum_clean).cumprod(), color=PALETTE["blue"], lw=1.8, label="AQR UK momentum (survivorship-free)")
     tidy(ax2, title=f"momentum, correlation {b.correlation:.2f}", ylabel="growth of one pound")
     ax2.legend(fontsize=8)
     caption(
         fig,
-        f"Yahoo Finance adjusted month-end prices of {cleaning.kept} companies; {len(cleaning.excluded)} series excluded for impossible "
-        "moves (pence/pound flips). Equal weights tilt the survivors towards smaller firms, which adds a size effect to the bias.",
+        f"Yahoo Finance daily adjusted closes at month end, {cleaning.kept} companies; {len(cleaning.excluded)} series excluded for "
+        "impossible moves and unit flips (ADR 0011). Equal weights tilt the survivors towards smaller firms, which adds a size effect to the bias.",
     )
     return fig
 
