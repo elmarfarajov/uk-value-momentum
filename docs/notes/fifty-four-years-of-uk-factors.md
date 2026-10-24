@@ -32,9 +32,10 @@ The main findings:
 6. **Exeter's downloadable files are not the factors in its own paper.** The market reproduces
    the published Table 1 exactly. Momentum averages 0.99% a month in the files against 0.77% in
    the paper, and HML 0.39% against 0.31%.
-7. **Free stock data is survivor data.** Today's FTSE 350 beat the market by 7.7% a year since
-   2000, which no investor could have earned. Momentum built on those survivors is biased far
-   less: 6.8% against 6.1%.
+7. **Free stock data is survivor data.** Today's FTSE 350 beat the market by 4.0% a year since
+   2000, which no investor could have earned. Momentum built on those survivors understates the
+   clean factor, 4.1% against 6.1%: the losers that survived rebounded. *(Corrected in v0.2.0;
+   see the Errata at the end.)*
 8. **Value is a premium once momentum is held constant.** Value's CAPM alpha is 2.2% a year
    (*t* = 0.8). Controlling for momentum it is 7.6% (*t* = 3.5), and HML Devil's rises from
    2.4% to 10.0% (*t* = 4.8). Value's raw record is dragged down by an implicit short position
@@ -160,11 +161,12 @@ annual percentage as *r*^UK_t = (1 + *R*_t/100)^(1/12) − 1.
 
 ### 3.4 The free survivor sample
 
-Wikipedia lists today's FTSE 100 and FTSE 250. Yahoo has adjusted month-end closes for 349 of
-them. Yahoo's London prices flip between pence and pounds (×100), and many investment trusts
-flip by ×10. ADR 0003 explains why any series with a month above +400% or below −80% is
-dropped whole rather than repaired. That rule drops 39 series and keeps 310. The last complete
-month is September 2026.
+Wikipedia lists today's FTSE 100 and FTSE 250. Yahoo has daily adjusted closes for 349 of them,
+sampled at each month end (ADR 0011: Yahoo's own monthly bars mishandle dividends). Yahoo's
+London prices flip between pence and pounds (×100), and some trusts flip by ×10 or ×5. ADR 0003
+and ADR 0011 explain why a series with a month above +300% or below −80%, or with a unit flip
+that later reverses, is dropped whole rather than repaired. The rules drop 22 series and keep
+327. The last complete month is September 2026.
 
 ## 4. Methods
 
@@ -406,22 +408,23 @@ momentum correlation holds in every market: from −0.52 to −0.63 within the s
 
 | Measure | Value |
 |---|---|
-| Series downloaded / excluded for impossible moves / kept | 349 / 39 / 310 |
-| Survivors' equal-weighted return minus the UK market | **+7.7% a year** |
-| Momentum on survivors: mean, vol, Sharpe, NW *t* | 6.8%, 16.5%, 0.41, 1.82 |
+| Series downloaded / excluded / kept | 349 / 22 / 327 |
+| Survivors' equal-weighted return minus the UK market | **+4.0% a year** |
+| Momentum on survivors: mean, vol, Sharpe, NW *t* | 4.1%, 15.2%, 0.27, 1.25 |
 | AQR momentum, same 318 months: mean, vol, Sharpe, NW *t* | 6.1%, 17.2%, 0.36, 1.66 |
-| Gap (survivors minus AQR) | +0.7% a year |
-| Correlation | 0.77 |
-| Stocks with a signal | 151 (2000) to 307 (2026) |
+| Gap (survivors minus AQR) | −2.0% a year |
+| Correlation | 0.83 |
+| Stocks with a signal | 163 (2000) to 324 (2026) |
 
-The survivors' premium is large and entirely spurious. It is the return of having known in
-2000 which companies would still be listed in 2026. Part of it is a size tilt, because an
+The survivors' premium is entirely spurious. It is the return of having known in 2000 which
+companies would still be listed in 2026, and it shrinks as the sample approaches today: 7.5% a
+year in 1999-2007, 5.5% in 2008-2015 and none since 2016. Part of it is a size tilt, because an
 equal-weighted FTSE 350 leans towards the FTSE 250.
 
-The momentum bias is small, and that is not obvious in advance. Survivorship lifts both the
-past winners and the past losers, and a long/short strategy nets most of it out. It still
-cannot be ignored: the survivors' version has a different sample, different volatility and a
-correlation of only 0.77 with the clean factor.
+The momentum bias has the opposite sign to the premium, which is not obvious in advance.
+Survivorship removes the losers that later failed, and the losers that remain are the ones that
+recovered. The short leg therefore loses money on survivors, and survivor momentum understates
+the clean factor by 2.0 points a year. Day 2 traces this leg by leg.
 
 ### 5.7 Over time and across markets
 
@@ -806,8 +809,8 @@ second wedge, after the risk-free rate, between AQR's dollar numbers and a sterl
    tens of basis points normally, more in 2007 to 2009. That understates sterling market excess
    returns slightly. It does not affect long/short factors.
 4. **Exeter ends in June 2016**, so the two-source check covers only 1986 to 2016.
-5. **The survivor sample's 39 exclusions** may include genuine extreme moves. The bias
-   estimate is for the 310 clean series, not the full FTSE 350.
+5. **The survivor sample's 22 exclusions** may include genuine extreme moves. The bias
+   estimate is for the 327 clean series, not the full FTSE 350.
 6. **No costs.** All returns are gross of trading costs and UK stamp duty (0.5% on purchases).
    Momentum turns over far more than value, so its net premium is smaller. Days 9 and 10
    measure this.
@@ -879,3 +882,25 @@ its dependence on market states, the setting for the crashes of Section 5.4 and 
 Data: AQR Capital Management, LLC, data library (accessed 18 October 2026); Exeter Xfi Centre
 for Finance and Investment, UK factors (Gregory et al., 2013); Federal Reserve Bank of St.
 Louis, FRED.
+
+## Errata (v0.2.0)
+
+Day 2 found a defect in the stock-level data behind Section 5.6. Yahoo's monthly price bars, used
+in v0.1.0 and v0.1.1, apply dividend adjustments inconsistently: many investment trusts show a
+spike in each ex-dividend month that reverses the next. Pooled across stocks, monthly returns had
+a first-order autocorrelation of −0.14 and a third-order one of +0.32, impossible for real
+prices. A few series also had unit flips of about ×5 that stayed within the old +400%/−80% limits.
+
+Prices are now daily adjusted closes sampled at month end, and the cleaning rules were tightened
+(ADR 0011). The first- and third-order autocorrelations fell to +0.007 and +0.023. The corrected numbers in Section 5.6
+and finding 7 change the interpretation:
+
+| Measure | v0.1.x | v0.2.0 |
+|---|---|---|
+| Series excluded / kept | 39 / 310 | 22 / 327 |
+| Survivors minus the market | +7.7% a year | +4.0% a year |
+| Momentum on survivors | 6.8% | 4.1% |
+| Survivors minus AQR momentum | +0.7% | −2.0% |
+| Correlation with AQR momentum | 0.77 | 0.83 |
+
+Every factor-level result (AQR and Exeter) is unaffected.
