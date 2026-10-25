@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.3.0: Industry momentum and sector rotation (Day 3)
+
+### Added
+
+* `ukfactors.industry`: twelve groups (ICB industries, investment trusts separate), industry
+  returns, industry momentum, stock-level industry and industry-neutral signals, Fama-MacBeth
+  regressions, lagged cross-correlations, relative returns, placebo groupings, dispersion, spanning,
+  within-group momentum, yearly rotation.
+* `momentum.ranks`, `overlapping` and `event_time` take an exact leg `count` for small
+  cross-sections.
+* Twenty charts, the Day 3 note (12 tables), ADR 0012.
+* Four validation checks (23 in all) and 13 tests (87 in all, 99% coverage).
+
+### Fixed
+
+* Industry legs held four long and three short through a floating-point boundary in the percentile
+  ranks; exact counts now (ADR 0012). One-month industry momentum is 5.5% a year (*t* = 2.1), not 4.5%.
+
 ## v0.2.0: The anatomy of momentum (Day 2)
 
 ### Added

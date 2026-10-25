@@ -190,3 +190,85 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Five years with nothing to show](images/rolling-stability.png)
 
+## Day 3: Industry momentum and sector rotation
+
+**Twelve UK industries** - Growth of one pound in each industry, 2000-2026.
+
+![Twelve UK industries](images/industry-paths.png)
+
+**Industry returns year by year** - Calendar-year returns of twelve industries.
+
+![Industry returns year by year](images/industry-years.png)
+
+**Industries: risk, return and correlation** - Mean against volatility, and the correlation matrix.
+
+![Industries: risk, return and correlation](images/industry-risk-return.png)
+
+**Stocks behind each industry** - Members per industry over time.
+
+![Stocks behind each industry](images/industry-sizes.png)
+
+**Industry momentum by horizon** - J x K grid of industry momentum.
+
+![Industry momentum by horizon](images/industry-grid.png)
+
+**Stocks reverse, industries continue** - Fama-MacBeth slopes on last month's returns.
+
+![Stocks reverse, industries continue](images/one-month.png)
+
+**Industry out of stock momentum** - Stock, industry-neutral and industry momentum.
+
+![Industry out of stock momentum](images/industry-vs-stock.png)
+
+**Spanning tests** - Alphas of each momentum strategy on another.
+
+![Spanning tests](images/spanning.png)
+
+**Fama-MacBeth: own against industry** - Slopes on own, neutral and industry 12-1 returns.
+
+![Fama-MacBeth: own against industry](images/fama-macbeth.png)
+
+**Real industries against random groups** - Industry momentum and dispersion for random groupings.
+
+![Real industries against random groups](images/placebo.png)
+
+**Industry dispersion** - Dispersion of industry returns and next-month industry momentum.
+
+![Industry dispersion](images/dispersion.png)
+
+**Do some industries lead others?** - Lagged cross-correlations of industry returns.
+
+![Do some industries lead others?](images/lead-lag.png)
+
+**Sector rotation year by year** - Long and short legs of industry momentum by year.
+
+![Sector rotation year by year](images/rotation.png)
+
+**Industry signals fade** - Event-time returns of industry momentum.
+
+![Industry signals fade](images/industry-event-time.png)
+
+**Industry momentum and market states** - Returns after rising and falling markets.
+
+![Industry momentum and market states](images/industry-states.png)
+
+**April and industries** - Calendar-month means of industry and neutral momentum.
+
+![April and industries](images/industry-calendar.png)
+
+**Industry momentum turnover** - Monthly turnover of industry and stock momentum.
+
+![Industry momentum turnover](images/industry-turnover.png)
+
+**Momentum within industries** - Within-group momentum in the largest groups.
+
+![Momentum within industries](images/within-industries.png)
+
+**Investment-trust momentum** - Trusts against operating companies.
+
+![Investment-trust momentum](images/trusts.png)
+
+**Five-year windows** - Rolling Sharpe ratios of momentum variants.
+
+![Five-year windows](images/industry-stability.png)
+

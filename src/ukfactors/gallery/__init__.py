@@ -20,6 +20,7 @@ from .style import save
 DAYS: dict[int, str] = {
     1: "Fifty-four years of UK factors",
     2: "The anatomy of momentum",
+    3: "Industry momentum and sector rotation",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 STOCKS = ["yahoo_ftse350_monthly.csv"]
@@ -50,6 +51,7 @@ def items() -> tuple[Item, ...]:
     from . import anatomy as a
     from . import deepdive as d
     from . import foundation as f
+    from . import industries as ind
 
     return (
         Item(
@@ -356,6 +358,166 @@ def items() -> tuple[Item, ...]:
             a.rolling_stability,
             2,
             S,
+        ),
+        Item(
+            "industry-paths.png",
+            "Twelve UK industries",
+            "Growth of one pound in each industry, 2000-2026.",
+            ind.industry_paths,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-years.png",
+            "Industry returns year by year",
+            "Calendar-year returns of twelve industries.",
+            ind.industry_years,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-risk-return.png",
+            "Industries: risk, return and correlation",
+            "Mean against volatility, and the correlation matrix.",
+            ind.industry_risk_return,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-sizes.png",
+            "Stocks behind each industry",
+            "Members per industry over time.",
+            ind.group_sizes,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-grid.png",
+            "Industry momentum by horizon",
+            "J x K grid of industry momentum.",
+            ind.industry_grid,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "one-month.png",
+            "Stocks reverse, industries continue",
+            "Fama-MacBeth slopes on last month's returns.",
+            ind.one_month,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-vs-stock.png",
+            "Industry out of stock momentum",
+            "Stock, industry-neutral and industry momentum.",
+            ind.industry_vs_stock_paths,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "spanning.png",
+            "Spanning tests",
+            "Alphas of each momentum strategy on another.",
+            ind.spanning_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "fama-macbeth.png",
+            "Fama-MacBeth: own against industry",
+            "Slopes on own, neutral and industry 12-1 returns.",
+            ind.fama_macbeth_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "placebo.png",
+            "Real industries against random groups",
+            "Industry momentum and dispersion for random groupings.",
+            ind.placebo_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "dispersion.png",
+            "Industry dispersion",
+            "Dispersion of industry returns and next-month industry momentum.",
+            ind.dispersion_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "lead-lag.png",
+            "Do some industries lead others?",
+            "Lagged cross-correlations of industry returns.",
+            ind.lead_lag,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "rotation.png",
+            "Sector rotation year by year",
+            "Long and short legs of industry momentum by year.",
+            ind.rotation,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-event-time.png",
+            "Industry signals fade",
+            "Event-time returns of industry momentum.",
+            ind.industry_event_time,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-states.png",
+            "Industry momentum and market states",
+            "Returns after rising and falling markets.",
+            ind.industry_states,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-calendar.png",
+            "April and industries",
+            "Calendar-month means of industry and neutral momentum.",
+            ind.industry_calendar,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-turnover.png",
+            "Industry momentum turnover",
+            "Monthly turnover of industry and stock momentum.",
+            ind.turnover_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "within-industries.png",
+            "Momentum within industries",
+            "Within-group momentum in the largest groups.",
+            ind.within_industries,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "trusts.png",
+            "Investment-trust momentum",
+            "Trusts against operating companies.",
+            ind.trusts_chart,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "industry-stability.png",
+            "Five-year windows",
+            "Rolling Sharpe ratios of momentum variants.",
+            ind.stability,
+            3,
+            tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
         ),
     )
 
