@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from . import analysis, momentum, stats, survivorship
+from . import analysis, industry, momentum, stats, survivorship
 from .data import store
 
 Result = tuple[str, str, str, bool | None]  # reference, result, error, passed (None: skipped)
@@ -370,6 +370,52 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
             caught and kept,
         )
 
+    def _toy() -> tuple[pd.DataFrame, pd.Series]:
+        rng = np.random.default_rng(41)
+        idx = pd.date_range("2000-01-31", periods=60, freq="ME")
+        ret = pd.DataFrame(rng.normal(0.01, 0.06, (60, 40)), index=idx, columns=[f"s{i}" for i in range(40)])
+        ret.iloc[:10, :3] = np.nan
+        grp = pd.Series([f"g{i % 5}" for i in range(40)], index=ret.columns)
+        return ret, grp
+
+    def industry_returns_brute() -> Result:
+        ret, grp = _toy()
+        ir, _ = industry.industry_returns(ret, grp, min_members=1)
+        gap = max(
+            float(np.nanmax(np.abs(ir[g].to_numpy() - ret[grp.index[grp == g]].mean(axis=1).to_numpy()))) for g in ir.columns
+        )
+        return "industry return = mean of its members each month", "40 stocks, 5 groups, gaps", f"{gap:.1e}", gap < 1e-14
+
+    def neutral_sums_to_zero() -> Result:
+        ret, grp = _toy()
+        n = industry.neutral_signal(ret, grp)
+        sums = n.T.groupby(grp.to_numpy()).sum(min_count=1).T
+        gap = float(np.nanmax(np.abs(sums.to_numpy())))
+        return "industry-neutral signals sum to zero within each industry", "every month and group", f"{gap:.1e}", gap < 1e-12
+
+    def fama_macbeth_vs_ols() -> Result:
+        try:
+            import statsmodels.api as sm
+        except ImportError:
+            return "statsmodels OLS each month", "needs statsmodels", "-", None
+        ret, grp = _toy()
+        own = momentum.formation_return(ret, 6, 1)
+        fm = industry.fama_macbeth(ret, {"own": own}, min_stocks=10)
+        date = fm.coef.index[5]
+        d = pd.concat([ret.loc[date].rename("y"), own.loc[date].rename("x")], axis=1).dropna()
+        x = (d["x"] - d["x"].mean()) / d["x"].std(ddof=0)
+        ols = float(sm.OLS(d["y"].to_numpy(), sm.add_constant(x.to_numpy())).fit().params[1])
+        gap = abs(float(fm.coef.loc[date, "own"]) - ols)
+        return "Fama-MacBeth monthly slope = OLS on the standardised signal", "one cross-section", f"{gap:.1e}", gap < 1e-12
+
+    def placebo_keeps_sizes() -> Result:
+        _, grp = _toy()
+        same = all(
+            industry.random_groups(grp, k).value_counts().sort_index().equals(grp.value_counts().sort_index()) for k in range(20)
+        )
+        moved = float(np.mean([(industry.random_groups(grp, k) != grp).mean() for k in range(20)]))
+        return "random groupings keep every group's size", "20 draws", f"{100 * moved:.0f}% of stocks moved", same and moved > 0.5
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -389,6 +435,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Momentum", "Residual momentum against statsmodels", residual_vs_statsmodels)
     add("Momentum", "Signals use only the past", signals_no_look_ahead)
     add("Momentum", "Event time agrees with the K = 1 strategy", event_time_identity)
+    add("Industry", "Industry returns are their members' mean", industry_returns_brute)
+    add("Industry", "Industry-neutral signals sum to zero", neutral_sums_to_zero)
+    add("Industry", "Fama-MacBeth slopes against OLS", fama_macbeth_vs_ols)
+    add("Industry", "Placebo groups keep their sizes", placebo_keeps_sizes)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 
