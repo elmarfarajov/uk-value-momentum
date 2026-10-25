@@ -62,6 +62,22 @@ The note runs to about twenty pages, with 24 charts and 20 tables. All charts: [
 Read the full note: [The anatomy of momentum](docs/notes/the-anatomy-of-momentum.md) - 22 charts,
 19 tables.
 
+## Day 3: industry momentum and sector rotation
+
+* **UK stock momentum is stock-specific.** Industry-neutral momentum keeps the whole Sharpe ratio
+  (0.32 vs 0.32, correlation 0.95) - the opposite of Moskowitz and Grinblatt's US finding.
+* **Industry momentum lives at one month:** last month's top three industries beat the bottom
+  three by 5.5% a year (*t* = 2.1); twelve-month industry momentum earns 1.9% (*t* = 0.6).
+* **Last month, stocks reverse and industries continue:** Fama-MacBeth slopes of −0.19 (*t* = −2.7)
+  on a stock's own last month and +0.14 (*t* = 2.5) on its industry's.
+* **Real industries are distinct but no better than random groups for momentum** (39th percentile
+  of 200 placebo groupings); no lead-lag network between industries.
+* **Momentum is strongest among investment trusts** (Sharpe 0.50, *t* = 2.3).
+
+![Stocks reverse, industries continue](docs/images/one-month.png)
+
+Read the full note: [Industry momentum](docs/notes/industry-momentum.md) - 20 charts, 12 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.
@@ -100,7 +116,8 @@ src/ukfactors/
   survivorship.py  cleaning Yahoo's unit flips, 12-1 momentum, the survivorship bias
   momentum.py    J x K portfolios, event time, residual momentum, market states, seasonality, turnover
   sectors.py     ICB industries from free-text sector labels
-  validation.py  nineteen checks against independent methods and published numbers
+  industry.py    industry portfolios, industry and industry-neutral momentum, Fama-MacBeth, lead-lag, placebo
+  validation.py  twenty-three checks against independent methods and published numbers
   gallery/       every chart, registered so the gallery page and the images cannot drift
 docs/notes/      one methodology note per day
 docs/adr/        architecture decision records
