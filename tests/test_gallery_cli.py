@@ -10,7 +10,7 @@ from ukfactors.validation import run_validation, to_markdown
 
 def test_gallery_registry_is_complete_and_unique() -> None:
     items = gallery.items()
-    assert len(items) == 46
+    assert len(items) == 66
     assert len({i.filename for i in items}) == len(items)
     assert all(i.day in gallery.DAYS for i in items)
     assert all(i.filename.endswith(".png") and i.title and i.description for i in items)
@@ -36,7 +36,7 @@ def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path) -
     written = gallery.build(tmp_path)
     foundation._panel.cache_clear()
     deepdive._ports.cache_clear()
-    assert len(written) == 46
+    assert len(written) == 66
     assert all(p.stat().st_size > 20_000 for p in written)
 
 
@@ -44,7 +44,7 @@ def test_validation_without_data_skips_rather_than_fails(no_data: Path) -> None:
     results = run_validation(fast=True)
     assert set(results["status"]) <= {"PASS", "SKIP"}
     assert (results["status"] == "SKIP").sum() == 5
-    assert (results["status"] == "PASS").sum() == 14
+    assert (results["status"] == "PASS").sum() == 18
     md = to_markdown(results)
     assert md.count("\n") == len(results) + 1
 
