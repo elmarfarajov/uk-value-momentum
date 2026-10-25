@@ -98,18 +98,31 @@ class Strategy:
     spread: pd.Series  # mean signal of winners minus losers at formation
 
 
-def ranks(signal: pd.DataFrame, share: float = 0.1, min_stocks: int = 30) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Winners (top ``share``) and losers (bottom ``share``) at each formation month; rows with too few stocks are empty."""
+def ranks(
+    signal: pd.DataFrame, share: float = 0.1, min_stocks: int = 30, count: int | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Winners (top ``share``) and losers (bottom ``share``) at each formation month; rows with too few stocks are empty.
+
+    ``count``, if given, takes exactly that many names in each leg (ties broken by column order), which
+    small cross-sections such as twelve industries need: a share like 3/12 sits on a floating-point
+    boundary of the percentile ranks.
+    """
+    n = signal.notna().sum(axis=1)
+    enough = (n >= min_stocks).to_numpy()[:, None]
+    if count is not None:
+        top = signal.rank(axis=1, ascending=False, method="first") <= count
+        bottom = signal.rank(axis=1, ascending=True, method="first") <= count
+        return top & enough, bottom & enough
     pct = signal.rank(axis=1, pct=True)
-    count = signal.notna().sum(axis=1)
-    enough = (count >= min_stocks).to_numpy()[:, None]
     return (pct > 1.0 - share) & enough, (pct <= share) & enough
 
 
-def overlapping(returns: pd.DataFrame, signal: pd.DataFrame, k: int = 1, share: float = 0.1, min_stocks: int = 30) -> Strategy:
+def overlapping(
+    returns: pd.DataFrame, signal: pd.DataFrame, k: int = 1, share: float = 0.1, min_stocks: int = 30, count: int | None = None
+) -> Strategy:
     """A Jegadeesh-Titman strategy: ``k`` overlapping cohorts formed on ``signal``, each held ``k`` months."""
     signal = signal.reindex(index=returns.index, columns=returns.columns)
-    win, lose = ranks(signal, share, min_stocks)
+    win, lose = ranks(signal, share, min_stocks, count)
     r = returns.to_numpy(dtype=np.float64)
     w = win.to_numpy()
     lo = lose.to_numpy()
@@ -187,13 +200,20 @@ def grid(
     return pd.DataFrame(rows)
 
 
-def event_time(returns: pd.DataFrame, signal: pd.DataFrame, horizon: int = 60, share: float = 0.1) -> pd.DataFrame:
+def event_time(
+    returns: pd.DataFrame,
+    signal: pd.DataFrame,
+    horizon: int = 60,
+    share: float = 0.1,
+    min_stocks: int = 30,
+    count: int | None = None,
+) -> pd.DataFrame:
     """Winner-minus-loser return in each month ``tau = 1..horizon`` after formation, averaged over formation months.
 
     Cohorts are formed on ``signal`` and never rebalanced; a stock that stops trading drops out.
     The standard error at each ``tau`` is Newey-West over formation months.
     """
-    win, lose = ranks(signal.reindex(index=returns.index, columns=returns.columns), share)
+    win, lose = ranks(signal.reindex(index=returns.index, columns=returns.columns), share, min_stocks, count)
     r = returns.to_numpy(dtype=np.float64)
     w, lo = win.to_numpy(), lose.to_numpy()
     forms = np.flatnonzero(w.any(axis=1) & lo.any(axis=1))
