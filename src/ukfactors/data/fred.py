@@ -5,6 +5,8 @@
   Treasury-bill series stops in 2017.
 * ``DEXUSUK``: US dollars per pound, daily from 1971 (Federal Reserve H.10); month-end values
   are used to tell whether a series is in sterling or in dollars.
+* ``IRLTLT01GBM156N``: the UK ten-year government bond yield (OECD Main Economic Indicators),
+  monthly from 1960, in percent a year; Day 4 prices a constant-maturity gilt from it.
 """
 
 from __future__ import annotations
@@ -15,7 +17,7 @@ import pandas as pd
 
 from . import store
 
-SERIES = {"uk_rate": "IR3TIB01GBM156N", "gbpusd": "DEXUSUK"}
+SERIES = {"uk_rate": "IR3TIB01GBM156N", "gbpusd": "DEXUSUK", "gilt_yield": "IRLTLT01GBM156N"}
 
 
 def fetch(root: Path | None = None) -> None:  # pragma: no cover - network
@@ -41,3 +43,10 @@ def gbpusd(root: Path | None = None) -> pd.Series:
     """US dollars per pound at each month end."""
     daily = _series("gbpusd", root)
     return daily.resample("ME").last().rename("GBPUSD")
+
+
+def gilt_yield(root: Path | None = None) -> pd.Series:
+    """The UK ten-year gilt yield in decimals, dated at the month end (OECD monthly average)."""
+    y = _series("gilt_yield", root) / 100.0
+    y.index = y.index + pd.offsets.MonthEnd(0)
+    return y.rename("GILT_YIELD")

@@ -272,3 +272,53 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Five-year windows](images/industry-stability.png)
 
+## Day 4: Time-series momentum on UK assets
+
+**Three UK asset classes** - Cumulative excess returns of UK equity, the ten-year gilt and the pound.
+
+![Three UK asset classes](images/tsm-assets.png)
+
+**Return predictability by lag** - Pooled t-statistics of past on future scaled returns, lags 1-24.
+
+![Return predictability by lag](images/tsm-predictability.png)
+
+**Time-series momentum by asset** - Cumulative TSMOM returns per asset and the portfolio.
+
+![Time-series momentum by asset](images/tsm-cumulative.png)
+
+**Lookback and holding period** - Sharpe ratio for each lookback and holding period.
+
+![Lookback and holding period](images/tsm-grid.png)
+
+**The trend-following smile** - Quarterly TSMOM against the UK market, with a quadratic fit.
+
+![The trend-following smile](images/tsm-smile.png)
+
+**Stress episodes** - TSMOM and UK equity in seven stress episodes.
+
+![Stress episodes](images/tsm-crises.png)
+
+**Long or short** - Direction of each position over time.
+
+![Long or short](images/tsm-positions.png)
+
+**Design choices** - Sharpe ratio and drawdown of five versions of the rule.
+
+![Design choices](images/tsm-design.png)
+
+**Placebo timing** - The actual Sharpe ratio against randomly shifted signals.
+
+![Placebo timing](images/tsm-placebo.png)
+
+**Rolling Sharpe ratios** - Five-year Sharpe ratios of asset and factor TSMOM.
+
+![Rolling Sharpe ratios](images/tsm-rolling.png)
+
+**Factor momentum** - UK factors held and timed by their own past return.
+
+![Factor momentum](images/tsm-factors.png)
+
+**Stocks: time series against cross section** - TS, XS and net market strategies on FTSE 350 stocks.
+
+![Stocks: time series against cross section](images/tsm-stocks.png)
+

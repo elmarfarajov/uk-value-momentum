@@ -157,6 +157,11 @@ def write_data(root: Path, seed: int = 0) -> dict[str, pd.Series]:
     pd.DataFrame({"observation_date": first.strftime("%Y-%m-%d"), "IR3TIB01GBM156N": rf_uk_annual.to_numpy()}).to_csv(
         root / "fred_uk_rate.csv", index=False
     )
+    gilt = np.clip(9 + np.cumsum(rng.normal(0, 0.25, MONTHS.size + 144)), 0.3, 17)
+    gmonths = pd.date_range("1960-01-01", periods=MONTHS.size + 144, freq="MS")
+    pd.DataFrame({"observation_date": gmonths.strftime("%Y-%m-%d"), "IRLTLT01GBM156N": gilt}).to_csv(
+        root / "fred_gilt_yield.csv", index=False
+    )
     days = pd.bdate_range("1971-12-01", "2026-09-30")
     level = fx.reindex(days, method="bfill").ffill().astype(object)
     last_day = days.to_series().groupby(days.to_period("M")).max()

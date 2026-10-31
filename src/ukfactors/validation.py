@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from . import analysis, industry, momentum, stats, survivorship
+from . import tsmom as tsm
 from .data import store
 
 Result = tuple[str, str, str, bool | None]  # reference, result, error, passed (None: skipped)
@@ -416,6 +417,76 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
         moved = float(np.mean([(industry.random_groups(grp, k) != grp).mean() for k in range(20)]))
         return "random groupings keep every group's size", "20 draws", f"{100 * moved:.0f}% of stocks moved", same and moved > 0.5
 
+    def gilt_against_cash_flows() -> Result:
+        # with 10 + 1/12 years at purchase, 20 whole coupons remain after a month: price = explicit sum of cash flows
+        y = pd.Series([0.05, 0.05, 0.062, 0.031, 0.031])
+        r = tsm.gilt_returns(y, maturity=10.0 + 1.0 / 12.0)
+        worst = 0.0
+        for t in range(1, len(y)):
+            c, h = y[t - 1] / 2.0, y[t] / 2.0
+            price = sum(c * (1 + h) ** -k for k in range(1, 21)) + (1 + h) ** -20
+            worst = max(worst, abs(r.iloc[t - 1] - (price - 1 + y[t - 1] / 12.0)))
+        flat = abs(r.iloc[0] - 0.05 / 12.0)
+        return (
+            "par-bond price against the sum of its cash flows; flat yield earns y/12",
+            "4 months",
+            f"{max(worst, flat):.1e}",
+            max(worst, flat) < 1e-12,
+        )
+
+    def vol_target_hit() -> Result:
+        # assets with 10% to 40% volatility end up with equal risk; the level overshoots the 10% target a little,
+        # because 1 / (a short EWMA estimate) is biased upwards (Jensen's inequality)
+        rng = np.random.default_rng(31)
+        idx = pd.date_range("1950-01-31", periods=900, freq="ME")
+        vols = np.array([0.1, 0.2, 0.3, 0.4])
+        r = pd.DataFrame(rng.normal(0.0, 1.0, (900, 4)) * vols / np.sqrt(12), index=idx)
+        realised = np.sqrt(12) * tsm.tsmom(r).by_asset.iloc[24:].std().to_numpy()
+        spread = float(realised.max() / realised.min())
+        return (
+            "scaled positions carry equal risk whatever the asset's volatility",
+            f"10-40% volatility -> {100 * realised.min():.1f}-{100 * realised.max():.1f}% (target 10%)",
+            f"max/min {spread:.3f}",
+            spread < 1.08 and 0.09 < realised.mean() < 0.135,
+        )
+
+    def planted_trend_found() -> Result:
+        rng = np.random.default_rng(32)
+        idx = pd.date_range("1950-01-31", periods=900, freq="ME")
+        mu = np.zeros((900, 3))
+        for t in range(1, 900):
+            mu[t] = 0.97 * mu[t - 1] + rng.normal(0, 0.004, 3)
+        trend = pd.DataFrame(mu + rng.normal(0, 0.04, (900, 3)), index=idx)
+        noise = pd.DataFrame(rng.normal(0, 0.04, (900, 3)), index=idx)
+        a = tsm.summary(tsm.tsmom(trend).portfolio)["sharpe"]
+        b = tsm.summary(tsm.tsmom(noise).portfolio)["sharpe"]
+        return (
+            "persistent expected returns give a positive Sharpe; noise does not",
+            "AR(1) drift vs iid",
+            f"{a:.2f} vs {b:.2f}",
+            a > 0.4 and abs(b) < 0.3,
+        )
+
+    def pooled_vs_statsmodels() -> Result:
+        try:
+            import statsmodels.api as sm
+        except ImportError:
+            return "pooled slope and month-clustered t against statsmodels", "needs statsmodels", "-", None
+
+        rng = np.random.default_rng(33)
+        idx = pd.date_range("1980-01-31", periods=300, freq="ME")
+        r = pd.DataFrame(rng.normal(0.005, 0.05, (300, 3)), index=idx)
+        ours = tsm.predictability(r, 1).iloc[0]
+        vol = tsm.ex_ante_vol(r)
+        z = r / vol.shift(1)
+        st = pd.concat([z.stack().rename("y"), z.shift(1).stack().rename("x")], axis=1).dropna()
+        g = st.index.get_level_values(0).astype("int64")
+        fit = sm.OLS(st["y"], sm.add_constant(st["x"])).fit(cov_type="cluster", cov_kwds={"groups": g})
+        n, k, groups = len(st), 2, len(set(g))
+        t_ours = ours["t"] / np.sqrt(groups / (groups - 1) * (n - 1) / (n - k))  # statsmodels' small-sample factor
+        gap = max(abs(ours["beta"] - fit.params["x"]), abs(t_ours - fit.tvalues["x"]))
+        return "pooled slope and month-clustered t against statsmodels", "3 assets, 300 months", f"{gap:.1e}", gap < 1e-8
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -439,6 +510,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Industry", "Industry-neutral signals sum to zero", neutral_sums_to_zero)
     add("Industry", "Fama-MacBeth slopes against OLS", fama_macbeth_vs_ols)
     add("Industry", "Placebo groups keep their sizes", placebo_keeps_sizes)
+    add("Trend", "Gilt returns against explicit cash flows", gilt_against_cash_flows)
+    add("Trend", "Volatility scaling equalises risk", vol_target_hit)
+    add("Trend", "A planted trend is found, noise is not", planted_trend_found)
+    add("Trend", "Pooled regression against statsmodels", pooled_vs_statsmodels)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 

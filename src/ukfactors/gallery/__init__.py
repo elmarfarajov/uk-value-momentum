@@ -21,8 +21,10 @@ DAYS: dict[int, str] = {
     1: "Fifty-four years of UK factors",
     2: "The anatomy of momentum",
     3: "Industry momentum and sector rotation",
+    4: "Time-series momentum on UK assets",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
+GILT = ["fred_gilt_yield.csv"]
 STOCKS = ["yahoo_ftse350_monthly.csv"]
 PORTS = [
     f"exeter_{n}.zip"
@@ -52,6 +54,7 @@ def items() -> tuple[Item, ...]:
     from . import deepdive as d
     from . import foundation as f
     from . import industries as ind
+    from . import trend as tr
 
     return (
         Item(
@@ -518,6 +521,102 @@ def items() -> tuple[Item, ...]:
             ind.stability,
             3,
             tuple(RAW + STOCKS + ["ftse350_constituents.csv"]),
+        ),
+        Item(
+            "tsm-assets.png",
+            "Three UK asset classes",
+            "Cumulative excess returns of UK equity, the ten-year gilt and the pound.",
+            tr.assets,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-predictability.png",
+            "Return predictability by lag",
+            "Pooled t-statistics of past on future scaled returns, lags 1-24.",
+            tr.predictability,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-cumulative.png",
+            "Time-series momentum by asset",
+            "Cumulative TSMOM returns per asset and the portfolio.",
+            tr.cumulative,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-grid.png",
+            "Lookback and holding period",
+            "Sharpe ratio for each lookback and holding period.",
+            tr.lookback_grid,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-smile.png",
+            "The trend-following smile",
+            "Quarterly TSMOM against the UK market, with a quadratic fit.",
+            tr.smile,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-crises.png",
+            "Stress episodes",
+            "TSMOM and UK equity in seven stress episodes.",
+            tr.crises,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-positions.png",
+            "Long or short",
+            "Direction of each position over time.",
+            tr.positions,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-design.png",
+            "Design choices",
+            "Sharpe ratio and drawdown of five versions of the rule.",
+            tr.design,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-placebo.png",
+            "Placebo timing",
+            "The actual Sharpe ratio against randomly shifted signals.",
+            tr.placebo,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-rolling.png",
+            "Rolling Sharpe ratios",
+            "Five-year Sharpe ratios of asset and factor TSMOM.",
+            tr.rolling,
+            4,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "tsm-factors.png",
+            "Factor momentum",
+            "UK factors held and timed by their own past return.",
+            tr.factor_momentum,
+            4,
+            tuple(RAW),
+        ),
+        Item(
+            "tsm-stocks.png",
+            "Stocks: time series against cross section",
+            "TS, XS and net market strategies on FTSE 350 stocks.",
+            tr.stocks,
+            4,
+            S,
         ),
     )
 

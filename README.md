@@ -78,6 +78,25 @@ Read the full note: [The anatomy of momentum](docs/notes/the-anatomy-of-momentum
 
 Read the full note: [Industry momentum](docs/notes/industry-momentum.md) - 20 charts, 12 tables.
 
+## Day 4: time-series momentum on UK assets
+
+* **Trend following paid in UK equity, gilts and sterling:** Sharpe 0.21, 0.32 and 0.13; the
+  volatility-scaled portfolio 0.36 (1973-2026), beating 99% of placebos with time-shifted signals.
+* **A smile, not a beta:** quarterly returns against the UK market have curvature 1.02 (*t* = 3.6)
+  and no linear exposure; gains in six of seven stress episodes (+27% in the dot-com bust, +21% in
+  2022).
+* **The one-month predictability of UK assets is an artefact** of the OECD gilt yield being a
+  monthly average (autocorrelation 0.32); equity and sterling show none. The 12-1 rule is unaffected
+  (Sharpe 0.38).
+* **Factor momentum is stronger:** timing six UK factors by their own past return gives a Sharpe of
+  0.88 (0.69 skipping the latest month), correlation 0.16 with asset trend following.
+* **Among stocks, time-series momentum is cross-sectional momentum** plus a net market bet that
+  earned little (alpha *t* = 0.1).
+
+![Trend following pays most when the market moves most](docs/images/tsm-smile.png)
+
+Read the full note: [Time-series momentum](docs/notes/time-series-momentum.md) - 12 charts, 14 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.
