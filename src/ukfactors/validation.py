@@ -468,7 +468,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
         )
 
     def pooled_vs_statsmodels() -> Result:
-        import statsmodels.api as sm
+        try:
+            import statsmodels.api as sm
+        except ImportError:
+            return "pooled slope and month-clustered t against statsmodels", "needs statsmodels", "-", None
 
         rng = np.random.default_rng(33)
         idx = pd.date_range("1980-01-31", periods=300, freq="ME")
