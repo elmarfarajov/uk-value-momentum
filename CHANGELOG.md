@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0: Time-series momentum on UK assets (Day 4)
+
+### Added
+
+* `ukfactors.tsmom`: constant-maturity gilt returns from yields, the pound's carry-trade excess
+  return, ex-ante EWMA volatility, sign / linear / moving-average signals, volatility-scaled
+  time-series momentum with overlapping holding periods and an optional skip, lookback grids,
+  MOP's pooled predictive regression with month-clustered errors, the quarterly smile regression,
+  a time-shift placebo, crisis tables, and stock-level time-series vs cross-sectional strategies.
+* `fred.gilt_yield`: the OECD UK ten-year yield (`IRLTLT01GBM156N`).
+* Twelve charts, the Day 4 note, ADRs 0013-0014.
+* Four validation checks (27 in all) and 14 tests (101 in all).
+
 ## v0.3.0: Industry momentum and sector rotation (Day 3)
 
 ### Added
