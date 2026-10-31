@@ -10,7 +10,7 @@ from ukfactors.validation import run_validation, to_markdown
 
 def test_gallery_registry_is_complete_and_unique() -> None:
     items = gallery.items()
-    assert len(items) == 66
+    assert len(items) == 78
     assert len({i.filename for i in items}) == len(items)
     assert all(i.day in gallery.DAYS for i in items)
     assert all(i.filename.endswith(".png") and i.title and i.description for i in items)
@@ -28,15 +28,19 @@ def test_gallery_skips_without_data(no_data: Path, capsys: pytest.CaptureFixture
     assert "skipped long-history.png" in capsys.readouterr().out
 
 
-def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path) -> None:
-    from ukfactors.gallery import deepdive, foundation
+def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from ukfactors.gallery import deepdive, foundation, trend
 
-    foundation._panel.cache_clear()
-    deepdive._ports.cache_clear()
+    monkeypatch.setattr(trend, "DRAWS", 20)
+    caches = [foundation._panel, deepdive._ports] + [
+        getattr(trend, n) for n in dir(trend) if hasattr(getattr(trend, n), "cache_clear")
+    ]
+    for cached in caches:
+        cached.cache_clear()
     written = gallery.build(tmp_path)
-    foundation._panel.cache_clear()
-    deepdive._ports.cache_clear()
-    assert len(written) == 66
+    for cached in caches:
+        cached.cache_clear()
+    assert len(written) == 78
     assert all(p.stat().st_size > 20_000 for p in written)
 
 
@@ -44,7 +48,7 @@ def test_validation_without_data_skips_rather_than_fails(no_data: Path) -> None:
     results = run_validation(fast=True)
     assert set(results["status"]) <= {"PASS", "SKIP"}
     assert (results["status"] == "SKIP").sum() == 5
-    assert (results["status"] == "PASS").sum() == 18
+    assert (results["status"] == "PASS").sum() == 22
     md = to_markdown(results)
     assert md.count("\n") == len(results) + 1
 
