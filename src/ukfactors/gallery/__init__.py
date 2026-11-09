@@ -22,6 +22,7 @@ DAYS: dict[int, str] = {
     2: "The anatomy of momentum",
     3: "Industry momentum and sector rotation",
     4: "Time-series momentum on UK assets",
+    5: "Value's lost decade",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 GILT = ["fred_gilt_yield.csv"]
@@ -55,6 +56,7 @@ def items() -> tuple[Item, ...]:
     from . import foundation as f
     from . import industries as ind
     from . import trend as tr
+    from . import valuedecade as vd
 
     return (
         Item(
@@ -617,6 +619,102 @@ def items() -> tuple[Item, ...]:
             tr.stocks,
             4,
             S,
+        ),
+        Item(
+            "ld-cumulative.png",
+            "Value's lost decade",
+            "Growth of one pound in HML, HML Devil and VAL.",
+            vd.cumulative,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-international.png",
+            "Four markets",
+            "AQR value in the UK, US, Europe and Japan since 2007.",
+            vd.international,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-drawdowns.png",
+            "Drawdowns",
+            "Drawdowns of the three UK value factors.",
+            vd.drawdowns,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-recovery.png",
+            "Before, during, after",
+            "Sharpe ratios before, during and after the lost decade.",
+            vd.recovery,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-break.png",
+            "A break in the mean?",
+            "Sup-Wald statistics for a break in HML's mean.",
+            vd.break_test,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-unusual.png",
+            "How unusual",
+            "Bootstrap distribution of decade-long returns before 2007.",
+            vd.unusual,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-learning.png",
+            "Learning about the premium",
+            "HML's expanding mean with a 95% band.",
+            vd.learning,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-attribution.png",
+            "Attribution",
+            "HML's lost-decade return split by factor loadings.",
+            vd.attribution,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-rates.png",
+            "Value and gilt yields",
+            "HML's beta to changes in the ten-year gilt yield.",
+            vd.rates,
+            5,
+            tuple(RAW + GILT),
+        ),
+        Item(
+            "ld-legs.png",
+            "Which leg lost",
+            "Value and growth deciles against the market.",
+            vd.legs,
+            5,
+            P,
+        ),
+        Item(
+            "ld-devil.png",
+            "HML Devil minus HML",
+            "The cost of timely prices in the lost decade.",
+            vd.devil,
+            5,
+            tuple(RAW),
+        ),
+        Item(
+            "ld-size.png",
+            "Small and large value",
+            "Value minus growth among small and large companies.",
+            vd.size,
+            5,
+            P,
         ),
     )
 
