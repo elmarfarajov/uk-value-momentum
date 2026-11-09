@@ -10,7 +10,7 @@ validation check or more, and decision records.
 | 2 | v0.2.0 | **Momentum's anatomy** ✅ | Formation and holding periods, the skip month, residual momentum, market states, seasonality |
 | 3 | v0.3.0 | **Industry momentum and sector rotation** ✅ | Is UK momentum an industry effect (Moskowitz-Grinblatt)? |
 | 4 | v0.4.0 | **Time-series momentum** ✅ | Trend following on UK equity, gilts and sterling (Moskowitz-Ooi-Pedersen) |
-| 5 | v0.5.0 | Value's lost decade | Decomposing 2007-2020: spreads, revaluation, HML Devil, intangibles |
+| 5 | v0.5.0 | **Value's lost decade** ✅ | Decomposing 2007-2020: spreads, revaluation, HML Devil, intangibles |
 | 6 | v0.6.0 | Quality and value traps | Does quality separate cheap stocks from value traps? |
 | 7 | v0.7.0 | Crashes and tail risk | Momentum crashes, volatility scaling, extreme value theory |
 | 8 | v0.8.0 | Risk or mispricing? | Fama-MacBeth, GRS, macro and sentiment exposures |
