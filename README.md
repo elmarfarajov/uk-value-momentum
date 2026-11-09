@@ -97,6 +97,23 @@ Read the full note: [Industry momentum](docs/notes/industry-momentum.md) - 20 ch
 
 Read the full note: [Time-series momentum](docs/notes/time-series-momentum.md) - 12 charts, 14 tables.
 
+## Day 5: value's lost decade
+
+* **2007-2020 cost UK value 18% to 66%, depending on the measure:** HML −18%, HML Devil −44%, AQR's
+  multi-measure VAL −66%. The US (−51%) and Europe (−58%) lost too; Japan gained 16%.
+* **Rare, not a break:** a loss this deep has about a 5% probability under HML's pre-2007 record
+  (1% for VAL), and a sup-Wald test finds no significant break in the mean (p = 0.30).
+* **Growth won, value did not lose:** the growth decile beat the market by 47% (2007-2016); the
+  value decile kept pace (+4%).
+* **Value became a gilt-yield bet:** +3.8% per point rise in the 10-year yield in 2007-2020
+  (*t* = 3.5), none before; yields fell 4.3 points.
+* **Since 2020, HML's Sharpe ratio is 1.54;** VAL is still 44% below its 2007 peak. No book values in
+  free UK data, so the revaluation decomposition is not attempted (ADR 0015).
+
+![Value's lost decade](docs/images/ld-cumulative.png)
+
+Read the full note: [Value's lost decade](docs/notes/value-lost-decade.md) - 12 charts, 11 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.

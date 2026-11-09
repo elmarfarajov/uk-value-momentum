@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.0: Value's lost decade (Day 5)
+
+### Added
+
+* `ukfactors.lostdecade`: episode statistics, a sup-Wald break test with a block-bootstrap p-value,
+  the bootstrap probability of a loss, the expanding mean with a Newey-West band, attribution to
+  factor loadings, the gilt-yield beta, and the value and growth legs against the market.
+* Twelve charts, the Day 5 note, ADR 0015.
+* Four validation checks (31 in all) and 10 tests.
+
 ## v0.4.0: Time-series momentum on UK assets (Day 4)
 
 ### Added

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from . import analysis, industry, momentum, stats, survivorship
+from . import lostdecade as ld
 from . import tsmom as tsm
 from .data import store
 
@@ -487,6 +488,54 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
         gap = max(abs(ours["beta"] - fit.params["x"]), abs(t_ours - fit.tvalues["x"]))
         return "pooled slope and month-clustered t against statsmodels", "3 assets, 300 months", f"{gap:.1e}", gap < 1e-8
 
+    def break_found() -> Result:
+        rng = np.random.default_rng(41)
+        idx = pd.date_range("1980-01-31", periods=480, freq="ME")
+        x = pd.Series(np.r_[rng.normal(0.008, 0.03, 300), rng.normal(-0.004, 0.03, 180)], index=idx)
+        _, date, stat = ld.sup_wald(x)
+        gap = abs((date.year - idx[300].year) * 12 + date.month - idx[300].month)
+        return (
+            "sup-Wald locates a planted break in the mean",
+            "break after month 300",
+            f"{gap} months off, Wald {stat:.0f}",
+            gap <= 12 and stat > 8.85,
+        )
+
+    def attribution_adds_up() -> Result:
+        rng = np.random.default_rng(42)
+        idx = pd.date_range("1990-01-31", periods=360, freq="ME")
+        x = pd.DataFrame(rng.normal(0.005, 0.04, (360, 2)), index=idx, columns=["F1", "F2"])
+        y = 0.002 + 0.5 * x["F1"] - 0.3 * x["F2"] + pd.Series(rng.normal(0, 0.01, 360), index=idx)
+        a = ld.attribution(y, x, None, ("2005-01", "2014-12"))
+        gap = abs(a.drop("total").sum() - a["total"])
+        coef = analysis.regress(y, x).coef
+        ref = coef[1] * x.loc["2005":"2014", "F1"].sum()
+        return (
+            "attribution parts sum to the total; loadings from OLS",
+            "two factors",
+            f"{max(gap, abs(a['F1'] - ref)):.1e}",
+            max(gap, abs(a["F1"] - ref)) < 1e-12,
+        )
+
+    def loss_probability_exact() -> Result:
+        from scipy.stats import norm
+
+        rng = np.random.default_rng(43)
+        z = rng.normal(0.004, 0.04, 40000)
+        hist = pd.Series(np.expm1(z))
+        loss = -0.2
+        est = ld.loss_probability(hist, 60, loss, reps=4000 if not fast else 1500, seed=44, block=1.0)
+        exact = float(norm.cdf((np.log1p(loss) - 60 * 0.004) / (0.04 * np.sqrt(60))))
+        return f"{exact:.4f} (lognormal returns, exact)", f"{est:.4f}", f"{abs(est - exact):.4f}", abs(est - exact) < 0.02
+
+    def rate_beta_recovered() -> Result:
+        rng = np.random.default_rng(45)
+        idx = pd.date_range("1990-01-31", periods=400, freq="ME")
+        y_level = pd.Series(5 + np.cumsum(rng.normal(0, 0.2, 400)), index=idx) / 100
+        y = 0.04 * (100 * y_level.diff()) + pd.Series(rng.normal(0, 0.005, 400), index=idx)
+        r = ld.rate_beta(y, y_level)
+        return "rate beta recovers a planted 4% per point", "400 months", f"{100 * r.coef[1]:.2f}%", abs(r.coef[1] - 0.04) < 0.003
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -514,6 +563,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Trend", "Volatility scaling equalises risk", vol_target_hit)
     add("Trend", "A planted trend is found, noise is not", planted_trend_found)
     add("Trend", "Pooled regression against statsmodels", pooled_vs_statsmodels)
+    add("Value", "Break test finds a planted break", break_found)
+    add("Value", "Attribution adds up", attribution_adds_up)
+    add("Value", "Loss probability against the exact value", loss_probability_exact)
+    add("Value", "Rate beta recovers a planted slope", rate_beta_recovered)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 

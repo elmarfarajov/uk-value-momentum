@@ -322,3 +322,53 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Stocks: time series against cross section](images/tsm-stocks.png)
 
+## Day 5: Value's lost decade
+
+**Value's lost decade** - Growth of one pound in HML, HML Devil and VAL.
+
+![Value's lost decade](images/ld-cumulative.png)
+
+**Four markets** - AQR value in the UK, US, Europe and Japan since 2007.
+
+![Four markets](images/ld-international.png)
+
+**Drawdowns** - Drawdowns of the three UK value factors.
+
+![Drawdowns](images/ld-drawdowns.png)
+
+**Before, during, after** - Sharpe ratios before, during and after the lost decade.
+
+![Before, during, after](images/ld-recovery.png)
+
+**A break in the mean?** - Sup-Wald statistics for a break in HML's mean.
+
+![A break in the mean?](images/ld-break.png)
+
+**How unusual** - Bootstrap distribution of decade-long returns before 2007.
+
+![How unusual](images/ld-unusual.png)
+
+**Learning about the premium** - HML's expanding mean with a 95% band.
+
+![Learning about the premium](images/ld-learning.png)
+
+**Attribution** - HML's lost-decade return split by factor loadings.
+
+![Attribution](images/ld-attribution.png)
+
+**Value and gilt yields** - HML's beta to changes in the ten-year gilt yield.
+
+![Value and gilt yields](images/ld-rates.png)
+
+**Which leg lost** - Value and growth deciles against the market.
+
+![Which leg lost](images/ld-legs.png)
+
+**HML Devil minus HML** - The cost of timely prices in the lost decade.
+
+![HML Devil minus HML](images/ld-devil.png)
+
+**Small and large value** - Value minus growth among small and large companies.
+
+![Small and large value](images/ld-size.png)
+
