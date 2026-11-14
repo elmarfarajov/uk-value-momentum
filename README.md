@@ -114,6 +114,26 @@ Read the full note: [Time-series momentum](docs/notes/time-series-momentum.md) -
 
 Read the full note: [Value's lost decade](docs/notes/value-lost-decade.md) - 12 charts, 11 tables.
 
+## Day 6: quality and value traps
+
+* **Cheap UK stocks are usually junk:** HML's correlation with AQR's quality-minus-junk factor
+  (QMJ) is −0.30 since 1993, and below zero in 90% of three-year windows.
+* **Holding both halves the risk for the same return:** HML 5.5% a year at 11% volatility, QMJ 5.4%
+  at 9%, the 50/50 mix 5.5% at 6%. Sharpe ratio 0.90 against 0.50 for HML; the bootstrap puts the
+  gain at 0.14 to 0.72 (90%).
+* **Controlling for quality raises value's alpha** from 8.0% to 9.7% a year; HML's QMJ loading is
+  −0.44.
+* **Quality paid for the lost decade:** in 2007-2020 HML lost 1.4% a year, QMJ gained 10.5%, the mix
+  compounded +89%. Since October 2020 the roles have reversed.
+* **International:** the correlation is negative in 20 of 24 countries; the US is an exception.
+* **Stock level, survivors only:** safe cheap FTSE 350 stocks lose 30% in a year a third as often as
+  risky ones (4.9% against 14.1%), but the survivor panel flatters the risky ones' returns
+  (ADR 0016).
+
+![Value, quality and the mix](docs/images/qv-cumulative.png)
+
+Read the full note: [Quality and value traps](docs/notes/quality-and-value-traps.md) - 10 charts, 10 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.

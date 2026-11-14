@@ -15,6 +15,7 @@ import pandas as pd
 
 from . import analysis, industry, momentum, stats, survivorship
 from . import lostdecade as ld
+from . import quality as qm
 from . import tsmom as tsm
 from .data import store
 
@@ -536,6 +537,67 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
         r = ld.rate_beta(y, y_level)
         return "rate beta recovers a planted 4% per point", "400 months", f"{100 * r.coef[1]:.2f}%", abs(r.coef[1] - 0.04) < 0.003
 
+    def mix_sharpe_closed_form() -> Result:
+        rng = np.random.default_rng(46)
+        idx = pd.date_range("1990-01-31", periods=360, freq="ME")
+        v = pd.Series(rng.normal(0.005, 0.03, 360), index=idx)
+        q = pd.Series(-0.4 * v.to_numpy() + rng.normal(0.004, 0.025, 360), index=idx)
+        m = qm.mix(v, q, 0.5).to_numpy()
+        mu = 0.5 * (v.mean() + q.mean())
+        var = 0.25 * (v.var() + q.var() + 2 * v.cov(q))
+        exact = float(np.sqrt(12) * mu / np.sqrt(var))
+        got = stats.annual_sharpe(m)
+        return (
+            f"{exact:.4f} (from the two means and the covariance)",
+            f"{got:.4f}",
+            f"{abs(got - exact):.1e}",
+            abs(got - exact) < 1e-10,
+        )
+
+    def quality_adjusted_alpha() -> Result:
+        rng = np.random.default_rng(47)
+        n = 12000
+        idx = pd.date_range("1000-01-31", periods=n, freq="ME", unit="s")
+        base = pd.DataFrame({"MKT": rng.normal(0.005, 0.045, n)}, index=idx)
+        q = pd.Series(-0.5 * base["MKT"].to_numpy() + rng.normal(0.004, 0.02, n), index=idx)
+        v = 0.008 + 0.1 * base["MKT"] - 0.45 * q + pd.Series(rng.normal(0, 0.02, n), index=idx)
+        a = qm.adjusted_alpha(v, base, q)
+        err = max(abs(a.with_quality.coef[0] - 0.008), abs(a.loading + 0.45) / 10)
+        return (
+            "planted alpha 0.8% a month, QMJ loading -0.45",
+            f"{100 * a.with_quality.coef[0]:.3f}%, {a.loading:.3f}",
+            f"{err:.4f}",
+            err < 0.002,
+        )
+
+    def cheapness_no_look_ahead() -> Result:
+        rng = np.random.default_rng(48)
+        r = pd.DataFrame(rng.normal(0.01, 0.08, (90, 3)), index=pd.date_range("2000-01-31", periods=90, freq="ME"))
+        c = qm.cheapness(r).to_numpy()
+        t = 75
+        x = r.to_numpy()
+        brute = float(np.prod(1 + x[t - 60 : t - 12, 0]) - 1)  # months t-60 to t-13
+        r2 = r.copy()
+        r2.iloc[t - 12 :, 0] = 0.5  # change everything from t-12 on
+        moved = abs(float(qm.cheapness(r2).to_numpy()[t, 0]) - float(c[t, 0]))
+        err = max(abs(float(c[t, 0]) - brute), moved)
+        return "product of returns t-60..t-13; later months ignored", f"{c[t, 0]:.4f}", f"{err:.1e}", err < 1e-12
+
+    def trap_rate_follows_planted_risk() -> Result:
+        rng = np.random.default_rng(49)
+        n, months = 150, 120
+        sig = np.linspace(0.03, 0.15, n)
+        r = pd.DataFrame(rng.normal(0.008, 1.0, (months, n)) * sig, index=pd.date_range("2000-01-31", periods=months, freq="ME"))
+        _, tab = qm.trap_buckets(r, min_stocks=100)
+        rates = tab.loc[["V1", "V2", "V3"], "trap_rate"].to_numpy()
+        ok = bool(np.all(np.diff(rates) > 0) and rates[2] > 2 * rates[0])
+        return (
+            "trap rate rises with planted volatility, riskiest above twice safest",
+            "150 stocks, vol 10-52%",
+            ", ".join(f"{x:.3f}" for x in rates),
+            ok,
+        )
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -567,6 +629,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Value", "Attribution adds up", attribution_adds_up)
     add("Value", "Loss probability against the exact value", loss_probability_exact)
     add("Value", "Rate beta recovers a planted slope", rate_beta_recovered)
+    add("Quality", "Mix Sharpe ratio against the closed form", mix_sharpe_closed_form)
+    add("Quality", "Quality-adjusted alpha recovers a planted model", quality_adjusted_alpha)
+    add("Quality", "Cheapness signal has no look-ahead", cheapness_no_look_ahead)
+    add("Quality", "Trap rate follows planted risk", trap_rate_follows_planted_risk)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 

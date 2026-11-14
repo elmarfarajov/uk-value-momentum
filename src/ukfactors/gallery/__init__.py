@@ -23,6 +23,7 @@ DAYS: dict[int, str] = {
     3: "Industry momentum and sector rotation",
     4: "Time-series momentum on UK assets",
     5: "Value's lost decade",
+    6: "Quality and value traps",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 GILT = ["fred_gilt_yield.csv"]
@@ -55,6 +56,7 @@ def items() -> tuple[Item, ...]:
     from . import deepdive as d
     from . import foundation as f
     from . import industries as ind
+    from . import quality as qv
     from . import trend as tr
     from . import valuedecade as vd
 
@@ -715,6 +717,86 @@ def items() -> tuple[Item, ...]:
             vd.size,
             5,
             P,
+        ),
+        Item(
+            "qv-cumulative.png",
+            "Value, quality and the mix",
+            "Growth of one pound in HML, QMJ and a 50/50 mix since 1993.",
+            qv.cumulative,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-correlation.png",
+            "Value and quality correlation",
+            "Rolling 36-month correlation of HML and HML Devil with QMJ.",
+            qv.correlation,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-frontier.png",
+            "Value-quality mixes",
+            "Sharpe ratio and worst fall across weights on QMJ.",
+            qv.frontier,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-lost-decade.png",
+            "Quality in value's lost decade",
+            "Annualised returns before, during and after 2007-2020.",
+            qv.lost_decade,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-alpha.png",
+            "Value's alpha controlling for quality",
+            "Alphas with and without QMJ, and the QMJ loadings.",
+            qv.alpha,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-crisis.png",
+            "Flight to quality",
+            "Quarterly QMJ against the market and by market month.",
+            qv.crisis,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-bootstrap.png",
+            "Is the gain luck?",
+            "Bootstrap distribution of the Sharpe gain from adding quality.",
+            qv.bootstrap,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-international.png",
+            "Value and quality across countries",
+            "Correlation and mix Sharpe ratios in AQR's countries.",
+            qv.international,
+            6,
+            tuple(RAW),
+        ),
+        Item(
+            "qv-traps.png",
+            "Value traps among FTSE 350 survivors",
+            "Trap rates and next-year returns of cheap stocks by volatility.",
+            qv.traps,
+            6,
+            S,
+        ),
+        Item(
+            "qv-trap-paths.png",
+            "Safe and risky cheap stocks",
+            "Growth of one pound in safe and risky cheap stocks.",
+            qv.trap_paths,
+            6,
+            S,
         ),
     )
 

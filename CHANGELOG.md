@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.6.0: Quality and value traps (Day 6)
+
+### Added
+
+* `ukfactors.quality`: the QMJ sample, value-quality mixes, value's alpha with and without QMJ,
+  returns by window, quality in market falls, the country table, a bootstrap of the Sharpe gain,
+  and stock-level trap buckets (long-term losers split by volatility, with trap rates).
+* Ten charts, the Day 6 note, ADR 0016.
+* Four validation checks (35 in all) and 9 tests.
+
 ## v0.5.0: Value's lost decade (Day 5)
 
 ### Added
