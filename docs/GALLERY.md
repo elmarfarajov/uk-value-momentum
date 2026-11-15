@@ -372,3 +372,45 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Small and large value](images/ld-size.png)
 
+## Day 6: Quality and value traps
+
+**Value, quality and the mix** - Growth of one pound in HML, QMJ and a 50/50 mix since 1993.
+
+![Value, quality and the mix](images/qv-cumulative.png)
+
+**Value and quality correlation** - Rolling 36-month correlation of HML and HML Devil with QMJ.
+
+![Value and quality correlation](images/qv-correlation.png)
+
+**Value-quality mixes** - Sharpe ratio and worst fall across weights on QMJ.
+
+![Value-quality mixes](images/qv-frontier.png)
+
+**Quality in value's lost decade** - Annualised returns before, during and after 2007-2020.
+
+![Quality in value's lost decade](images/qv-lost-decade.png)
+
+**Value's alpha controlling for quality** - Alphas with and without QMJ, and the QMJ loadings.
+
+![Value's alpha controlling for quality](images/qv-alpha.png)
+
+**Flight to quality** - Quarterly QMJ against the market and by market month.
+
+![Flight to quality](images/qv-crisis.png)
+
+**Is the gain luck?** - Bootstrap distribution of the Sharpe gain from adding quality.
+
+![Is the gain luck?](images/qv-bootstrap.png)
+
+**Value and quality across countries** - Correlation and mix Sharpe ratios in AQR's countries.
+
+![Value and quality across countries](images/qv-international.png)
+
+**Value traps among FTSE 350 survivors** - Trap rates and next-year returns of cheap stocks by volatility.
+
+![Value traps among FTSE 350 survivors](images/qv-traps.png)
+
+**Safe and risky cheap stocks** - Growth of one pound in safe and risky cheap stocks.
+
+![Safe and risky cheap stocks](images/qv-trap-paths.png)
+
