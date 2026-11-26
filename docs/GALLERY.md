@@ -456,3 +456,45 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Scaling across countries](images/cr-international.png)
 
+## Day 8: Risk or mispricing?
+
+**GRS tests** - Gibbons-Ross-Shanken statistics by test set and model.
+
+![GRS tests](images/rp-grs.png)
+
+**Size-value alphas** - CAPM and three-factor alphas of the 25 size-B/M portfolios.
+
+![Size-value alphas](images/rp-alphas-bm.png)
+
+**Size-momentum alphas** - Alphas of the six size-momentum portfolios under three models.
+
+![Size-momentum alphas](images/rp-alphas-mom.png)
+
+**Cross-sectional fit** - Fama-MacBeth fitted against realised mean returns.
+
+![Cross-sectional fit](images/rp-fit.png)
+
+**Prices of risk** - Fama-MacBeth prices of risk against factor means.
+
+![Prices of risk](images/rp-lambdas.png)
+
+**Macro exposures** - Factor returns on rate, term spread and sterling news.
+
+![Macro exposures](images/rp-macro.png)
+
+**Macro Fama-MacBeth** - Prices of macro risk in the cross-section.
+
+![Macro Fama-MacBeth](images/rp-macro-fm.png)
+
+**Before and after publication** - Factor means before and after 1993.
+
+![Before and after publication](images/rp-publication.png)
+
+**Spreads by size** - Momentum and value spreads among small and big stocks.
+
+![Spreads by size](images/rp-size.png)
+
+**Rolling pricing errors** - Mean absolute alpha in rolling ten-year windows.
+
+![Rolling pricing errors](images/rp-rolling.png)
+

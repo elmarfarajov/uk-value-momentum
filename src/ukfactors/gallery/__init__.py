@@ -25,6 +25,7 @@ DAYS: dict[int, str] = {
     5: "Value's lost decade",
     6: "Quality and value traps",
     7: "Crashes and tail risk",
+    8: "Risk or mispricing?",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 GILT = ["fred_gilt_yield.csv"]
@@ -58,6 +59,7 @@ def items() -> tuple[Item, ...]:
     from . import deepdive as d
     from . import foundation as f
     from . import industries as ind
+    from . import pricing as rp
     from . import quality as qv
     from . import trend as tr
     from . import valuedecade as vd
@@ -879,6 +881,86 @@ def items() -> tuple[Item, ...]:
             cr.international,
             7,
             tuple(RAW),
+        ),
+        Item(
+            "rp-grs.png",
+            "GRS tests",
+            "Gibbons-Ross-Shanken statistics by test set and model.",
+            rp.grs,
+            8,
+            P,
+        ),
+        Item(
+            "rp-alphas-bm.png",
+            "Size-value alphas",
+            "CAPM and three-factor alphas of the 25 size-B/M portfolios.",
+            rp.alphas_bm,
+            8,
+            P,
+        ),
+        Item(
+            "rp-alphas-mom.png",
+            "Size-momentum alphas",
+            "Alphas of the six size-momentum portfolios under three models.",
+            rp.alphas_mom,
+            8,
+            P,
+        ),
+        Item(
+            "rp-fit.png",
+            "Cross-sectional fit",
+            "Fama-MacBeth fitted against realised mean returns.",
+            rp.fit,
+            8,
+            P,
+        ),
+        Item(
+            "rp-lambdas.png",
+            "Prices of risk",
+            "Fama-MacBeth prices of risk against factor means.",
+            rp.lambdas,
+            8,
+            P,
+        ),
+        Item(
+            "rp-macro.png",
+            "Macro exposures",
+            "Factor returns on rate, term spread and sterling news.",
+            rp.macro,
+            8,
+            P + tuple(GILT),
+        ),
+        Item(
+            "rp-macro-fm.png",
+            "Macro Fama-MacBeth",
+            "Prices of macro risk in the cross-section.",
+            rp.macro_fm,
+            8,
+            P + tuple(GILT),
+        ),
+        Item(
+            "rp-publication.png",
+            "Before and after publication",
+            "Factor means before and after 1993.",
+            rp.publication,
+            8,
+            P,
+        ),
+        Item(
+            "rp-size.png",
+            "Spreads by size",
+            "Momentum and value spreads among small and big stocks.",
+            rp.size,
+            8,
+            P,
+        ),
+        Item(
+            "rp-rolling.png",
+            "Rolling pricing errors",
+            "Mean absolute alpha in rolling ten-year windows.",
+            rp.rolling,
+            8,
+            P,
         ),
     )
 

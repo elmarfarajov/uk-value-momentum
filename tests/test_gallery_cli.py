@@ -10,7 +10,7 @@ from ukfactors.validation import run_validation, to_markdown
 
 def test_gallery_registry_is_complete_and_unique() -> None:
     items = gallery.items()
-    assert len(items) == 110
+    assert len(items) == 120
     assert len({i.filename for i in items}) == len(items)
     assert all(i.day in gallery.DAYS for i in items)
     assert all(i.filename.endswith(".png") and i.title and i.description for i in items)
@@ -29,7 +29,7 @@ def test_gallery_skips_without_data(no_data: Path, capsys: pytest.CaptureFixture
 
 
 def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from ukfactors.gallery import crashes, deepdive, foundation, quality, trend, valuedecade
+    from ukfactors.gallery import crashes, deepdive, foundation, pricing, quality, trend, valuedecade
 
     monkeypatch.setattr(trend, "DRAWS", 20)
     monkeypatch.setattr(valuedecade, "DRAWS", 20)
@@ -40,20 +40,21 @@ def test_every_chart_draws_from_synthetic_data(use_data: Path, tmp_path: Path, m
     caches += [getattr(valuedecade, n) for n in dir(valuedecade) if hasattr(getattr(valuedecade, n), "cache_clear")]
     caches += [getattr(quality, n) for n in dir(quality) if hasattr(getattr(quality, n), "cache_clear")]
     caches += [getattr(crashes, n) for n in dir(crashes) if hasattr(getattr(crashes, n), "cache_clear")]
+    caches += [getattr(pricing, n) for n in dir(pricing) if hasattr(getattr(pricing, n), "cache_clear")]
     for cached in caches:
         cached.cache_clear()
     written = gallery.build(tmp_path)
     for cached in caches:
         cached.cache_clear()
-    assert len(written) == 110
+    assert len(written) == 120
     assert all(p.stat().st_size > 20_000 for p in written)
 
 
 def test_validation_without_data_skips_rather_than_fails(no_data: Path) -> None:
     results = run_validation(fast=True)
     assert set(results["status"]) <= {"PASS", "SKIP"}
-    assert (results["status"] == "SKIP").sum() == 5
-    assert (results["status"] == "PASS").sum() == 34
+    assert (results["status"] == "SKIP").sum() == 7
+    assert (results["status"] == "PASS").sum() == 36
     md = to_markdown(results)
     assert md.count("\n") == len(results) + 1
 
