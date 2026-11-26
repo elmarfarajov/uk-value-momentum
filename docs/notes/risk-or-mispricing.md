@@ -21,7 +21,7 @@ Findings:
 1. **No model prices UK size, value and momentum portfolios together.**
    - On 31 test portfolios (25 size-book-to-market and 6 size-momentum), the GRS test rejects the
      CAPM (3.7), the Fama-French three-factor model (3.7) and the four-factor model with momentum
-     (1.9, p = 0.003).
+     (2.0, p = 0.002).
    - Four factors cut the mean absolute alpha from 2.6% to 1.4% a year.
 2. **UK value is too weak to reject even the CAPM.** On the 25 size-book-to-market portfolios
    alone, the GRS p-value is 0.54 for the CAPM.
@@ -78,8 +78,8 @@ far the factors are from the efficient frontier of factors and test assets toget
 | Test set | CAPM | FF3 | C4 | Mean abs. alpha CAPM / FF3 / C4 |
 |---|---:|---:|---:|---:|
 | 25 size-B/M | 0.95 (0.54) | 0.92 (0.58) | 0.95 (0.53) | 2.0 / 1.1 / 1.3 |
-| 6 size-momentum | 9.34 (<0.001) | 15.93 (<0.001) | 6.92 (<0.001) | 4.9 / 5.5 / 2.2 |
-| 31 together | 3.70 (<0.001) | 3.65 (<0.001) | 1.92 (0.003) | 2.6 / 2.0 / 1.4 |
+| 6 size-momentum | 9.34 (<0.001) | 15.93 (<0.001) | 8.23 (<0.001) | 4.9 / 5.5 / 2.2 |
+| 31 together | 3.70 (<0.001) | 3.65 (<0.001) | 1.98 (0.002) | 2.6 / 2.0 / 1.4 |
 | 25 size-mom (annual sort) | 2.01 (0.003) | 2.06 (0.002) | 1.54 (0.050) | 2.4 / 2.1 / 2.0 |
 
 Two results stand out. First, the 25 size-book-to-market portfolios do not reject the CAPM. Their
@@ -88,6 +88,14 @@ But the alphas are noisy, and over 36 years the evidence is not strong enough. S
 momentum portfolios reject every model, the four-factor model included. UMD is built from those
 six portfolios, but it is their average spread, so it cannot price each one exactly. Small winners
 keep an alpha of 4.9% a year under four factors.
+
+Because UMD is an exact combination of the six portfolios, their residuals under any model that
+includes UMD are linearly dependent, and the residual covariance matrix is singular. The first
+version inverted it anyway. On the real data a tiny rounding noise (10⁻⁸) hid the problem, but CI's
+synthetic data, where UMD is built exactly, failed. The test now works in the space of the
+covariance's non-zero eigenvalues, with N replaced by its rank: 5 instead of 6, and 30 instead
+of 31. This raised the four-factor statistic on the six portfolios from 6.9 to 8.2, and on the 31
+from 1.92 to 1.98.
 
 ![GRS](../images/rp-grs.png)
 

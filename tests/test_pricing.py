@@ -86,3 +86,10 @@ def test_rolling_alpha_positive(market) -> None:
     y, f = market
     r = P.rolling_alpha(y + 0.002, f, window=120)
     assert len(r) == 480 - 119 and r.mean() == pytest.approx(0.024, abs=0.01)
+
+
+def test_grs_handles_a_factor_spanned_by_the_test_assets(market) -> None:
+    y, f = market
+    spanned = f.assign(S=(y["P0"] + y["P1"]) / 2)  # a factor that is a combination of two test assets
+    g = P.grs(y, spanned)
+    assert g.rank == y.shape[1] - 1 and np.isfinite(g.stat) and 0 <= g.p <= 1

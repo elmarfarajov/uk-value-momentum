@@ -74,8 +74,7 @@ def grs() -> Figure:
         ax.bar(x + (j - 1) * 0.26, vals, 0.24, color=COL[m], label=m)
         for i, s in enumerate(SETS):
             g = res[(s, m)]
-            n = d[s].shape[1]
-            crit = fdist.ppf(0.95, n, g.months - n - len(MODELS[m]))
+            crit = fdist.ppf(0.95, g.rank, g.months - g.rank - len(MODELS[m]))
             ax.plot([x[i] + (j - 1) * 0.26 - 0.12, x[i] + (j - 1) * 0.26 + 0.12], [crit, crit], color=PALETTE["red"], lw=1.4)
             ax.text(
                 x[i] + (j - 1) * 0.26, vals[i], f"p={g.p:.2f}" if g.p >= 0.005 else "p<.01", ha="center", va="bottom", fontsize=7

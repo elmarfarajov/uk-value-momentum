@@ -38,6 +38,7 @@ class GRS:
     sharpe_factors: float  # monthly ex post maximum Sharpe ratio of the factors
     sharpe_all: float  # of factors and test assets together
     months: int
+    rank: int  # test assets that are not linear combinations of the others and the factors
 
 
 def grs(excess: pd.DataFrame, factors: pd.DataFrame) -> GRS:
@@ -46,6 +47,10 @@ def grs(excess: pd.DataFrame, factors: pd.DataFrame) -> GRS:
     ``J = (T / N) (T - N - K) / (T - K - 1) * a' S^-1 a / (1 + mu' O^-1 mu)`` is F(N, T - N - K) under
     normal errors, with ``S`` the residual covariance (divisor T - K - 1) and ``O`` the factors'
     covariance (divisor T - 1).
+
+    When a factor is itself a combination of test assets (Exeter's UMD is the average winner-minus-loser
+    spread of its six size-momentum portfolios), ``S`` is singular in that direction. The statistic is
+    then computed in the space of ``S``'s non-negligible eigenvectors, with ``N`` replaced by its rank.
     """
     data = pd.concat([excess, factors], axis=1).dropna()
     y = data[excess.columns].to_numpy(dtype=np.float64)
@@ -59,10 +64,14 @@ def grs(excess: pd.DataFrame, factors: pd.DataFrame) -> GRS:
     sigma = e.T @ e / (t - k - 1)
     mu = f.mean(axis=0)
     omega = np.atleast_2d(np.cov(f, rowvar=False))
-    quad_a = float(a @ np.linalg.solve(sigma, a))
+    w, v = np.linalg.eigh(sigma)
+    keep = w > 1e-8 * w.max()
+    r = int(keep.sum())
+    z = v[:, keep].T @ a
+    quad_a = float(z @ (z / w[keep]))
     quad_f = float(mu @ np.linalg.solve(omega, mu))
-    j = (t / n) * (t - n - k) / (t - k - 1) * quad_a / (1.0 + quad_f)
-    p = float(sps.f.sf(j, n, t - n - k))
+    j = (t / r) * (t - r - k) / (t - k - 1) * quad_a / (1.0 + quad_f)
+    p = float(sps.f.sf(j, r, t - r - k))
     return GRS(
         j,
         p,
@@ -71,6 +80,7 @@ def grs(excess: pd.DataFrame, factors: pd.DataFrame) -> GRS:
         float(np.sqrt(quad_f)),
         float(np.sqrt(quad_f + quad_a)),
         t,
+        r,
     )
 
 

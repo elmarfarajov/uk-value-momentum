@@ -153,7 +153,7 @@ Read the full note: [Crashes and tail risk](docs/notes/crashes-and-tail-risk.md)
 ## Day 8: risk or mispricing?
 
 * **No model prices UK size, value and momentum portfolios together:** the GRS test rejects the
-  four-factor model on 31 Exeter portfolios (p = 0.003), though it halves the CAPM's alphas.
+  four-factor model on 31 Exeter portfolios (p = 0.002), though it halves the CAPM's alphas.
 * **Momentum's beta is priced** (Fama-MacBeth lambda 10.0% a year, Shanken t = 2.7), but momentum
   has no exposure to rate, term-spread or sterling news.
 * **Value shrank after publication** (AQR VAL 8.6% to 0.8% a year after 1993); **momentum did not**.
