@@ -12,7 +12,7 @@ validation check or more, and decision records.
 | 4 | v0.4.0 | **Time-series momentum** ✅ | Trend following on UK equity, gilts and sterling (Moskowitz-Ooi-Pedersen) |
 | 5 | v0.5.0 | **Value's lost decade** ✅ | Decomposing 2007-2020: spreads, revaluation, HML Devil, intangibles |
 | 6 | v0.6.0 | **Quality and value traps** ✅ | Does quality separate cheap stocks from value traps? |
-| 7 | v0.7.0 | Crashes and tail risk | Momentum crashes, volatility scaling, extreme value theory |
+| 7 | v0.7.0 | **Crashes and tail risk** ✅ | Momentum crashes, volatility scaling, extreme value theory |
 | 8 | v0.8.0 | Risk or mispricing? | Fama-MacBeth, GRS, macro and sentiment exposures |
 | 9 | v0.9.0 | Costs and stamp duty | Turnover, spreads, the 0.5% stamp duty and net premia |
 | 10 | v0.10.0 | The AIM natural experiment | The 2014 stamp-duty exemption for AIM shares: difference-in-differences and synthetic control |

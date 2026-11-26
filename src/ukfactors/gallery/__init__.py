@@ -24,6 +24,7 @@ DAYS: dict[int, str] = {
     4: "Time-series momentum on UK assets",
     5: "Value's lost decade",
     6: "Quality and value traps",
+    7: "Crashes and tail risk",
 }
 RAW = ["aqr_vme_monthly.xlsx", "aqr_qmj_monthly.xlsx", "exeter_monthlyfactors.zip", "fred_uk_rate.csv", "fred_gbpusd.csv"]
 GILT = ["fred_gilt_yield.csv"]
@@ -53,6 +54,7 @@ P = tuple(RAW + PORTS)
 
 def items() -> tuple[Item, ...]:
     from . import anatomy as a
+    from . import crashes as cr
     from . import deepdive as d
     from . import foundation as f
     from . import industries as ind
@@ -797,6 +799,86 @@ def items() -> tuple[Item, ...]:
             qv.trap_paths,
             6,
             S,
+        ),
+        Item(
+            "cr-worst.png",
+            "Momentum's worst months",
+            "The twelve worst UMD months and the market in each.",
+            cr.worst,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-states.png",
+            "Momentum by market state",
+            "Mean returns in bull, bear and panic states.",
+            cr.states,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-optionality.png",
+            "Momentum's short call",
+            "UMD against the market in bull and bear markets.",
+            cr.optionality,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-scaled.png",
+            "Scaled momentum",
+            "Growth of one pound in UMD, constant-volatility and dynamic momentum.",
+            cr.scaled,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-moments.png",
+            "Moments of scaled momentum",
+            "Sharpe ratio, skewness, kurtosis and worst fall.",
+            cr.moments,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-weights.png",
+            "Scaling weights",
+            "Constant-volatility and dynamic weights over time.",
+            cr.weights,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-gpd.png",
+            "Generalised Pareto tails",
+            "Empirical and fitted loss tails for UMD and the market.",
+            cr.gpd,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-hill.png",
+            "Hill plot",
+            "Hill estimates of the tail index by number of losses.",
+            cr.hill,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-var.png",
+            "Value at risk",
+            "Normal, empirical and EVT value at risk and expected shortfall.",
+            cr.var,
+            7,
+            tuple(RAW),
+        ),
+        Item(
+            "cr-international.png",
+            "Scaling across countries",
+            "Sharpe ratio and skewness of UMD with and without scaling.",
+            cr.international,
+            7,
+            tuple(RAW),
         ),
     )
 

@@ -414,3 +414,45 @@ Every chart is rebuilt from source with `ukf gallery` after `ukf data fetch`.
 
 ![Safe and risky cheap stocks](images/qv-trap-paths.png)
 
+## Day 7: Crashes and tail risk
+
+**Momentum's worst months** - The twelve worst UMD months and the market in each.
+
+![Momentum's worst months](images/cr-worst.png)
+
+**Momentum by market state** - Mean returns in bull, bear and panic states.
+
+![Momentum by market state](images/cr-states.png)
+
+**Momentum's short call** - UMD against the market in bull and bear markets.
+
+![Momentum's short call](images/cr-optionality.png)
+
+**Scaled momentum** - Growth of one pound in UMD, constant-volatility and dynamic momentum.
+
+![Scaled momentum](images/cr-scaled.png)
+
+**Moments of scaled momentum** - Sharpe ratio, skewness, kurtosis and worst fall.
+
+![Moments of scaled momentum](images/cr-moments.png)
+
+**Scaling weights** - Constant-volatility and dynamic weights over time.
+
+![Scaling weights](images/cr-weights.png)
+
+**Generalised Pareto tails** - Empirical and fitted loss tails for UMD and the market.
+
+![Generalised Pareto tails](images/cr-gpd.png)
+
+**Hill plot** - Hill estimates of the tail index by number of losses.
+
+![Hill plot](images/cr-hill.png)
+
+**Value at risk** - Normal, empirical and EVT value at risk and expected shortfall.
+
+![Value at risk](images/cr-var.png)
+
+**Scaling across countries** - Sharpe ratio and skewness of UMD with and without scaling.
+
+![Scaling across countries](images/cr-international.png)
+

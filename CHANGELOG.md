@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.7.0: Crashes and tail risk (Day 7)
+
+### Added
+
+* `ukfactors.crashes`: bear and panic states, the Daniel-Moskowitz option regression, returns by
+  state, constant-volatility and out-of-sample dynamic scaling, distribution moments, generalised
+  Pareto peaks over threshold with VaR and expected shortfall, and the Hill estimator.
+* Ten charts, the Day 7 note, ADR 0017.
+* Four validation checks (39 in all) and 9 tests.
+
 ## v0.6.0: Quality and value traps (Day 6)
 
 ### Added

@@ -134,6 +134,22 @@ Read the full note: [Value's lost decade](docs/notes/value-lost-decade.md) - 12 
 
 Read the full note: [Quality and value traps](docs/notes/quality-and-value-traps.md) - 10 charts, 10 tables.
 
+## Day 7: crashes and tail risk
+
+* **Momentum crashes when a falling market rebounds:** April 2009 −33% (market +11%), November 2020
+  −25% (market +12%).
+* **In bear markets momentum is short a call:** its extra up-market beta is −0.87 (*t* = −2.4).
+  Panic months in which the market rose cost 20% a year; bear markets as a whole did not.
+* **Constant-volatility scaling** raised UMD's Sharpe ratio from 0.83 to 1.28 and turned its
+  skewness from −1.7 to +0.2. It helped in all 24 of AQR's countries.
+* **The tail is fat but its index is uncertain:** a generalised Pareto gives ξ = 0.24 for UMD, but
+  0.14-0.36 depending on the threshold. The normal model puts the one-in-a-thousand-month loss at
+  13%; the fitted tail says 32%.
+
+![Scaled momentum](docs/images/cr-scaled.png)
+
+Read the full note: [Crashes and tail risk](docs/notes/crashes-and-tail-risk.md) - 10 charts, 8 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.

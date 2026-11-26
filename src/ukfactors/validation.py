@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from . import analysis, industry, momentum, stats, survivorship
+from . import crashes as cr
 from . import lostdecade as ld
 from . import quality as qm
 from . import tsmom as tsm
@@ -598,6 +599,43 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
             ok,
         )
 
+    def gpd_recovers_student_t() -> Result:
+        from scipy.stats import t as student
+
+        x = pd.Series(student.rvs(4, size=40000 if not fast else 20000, random_state=50) * 0.04)
+        tail = cr.pot(x, 0.95)
+        return (
+            "Student t with 4 degrees of freedom: xi = 1/4",
+            f"{x.size:,} draws, losses above the 95th percentile",
+            f"{tail.xi:.3f}",
+            abs(tail.xi - 0.25) < 0.06,
+        )
+
+    def hill_recovers_pareto() -> Result:
+        rng = np.random.default_rng(51)
+        loss = (1.0 - rng.random(50000)) ** (-1.0 / 3.0)  # Pareto, tail index alpha = 3, xi = 1/3
+        h = cr.hill(pd.Series(-loss), np.array([2000]))[0]
+        return "Pareto with alpha = 3: xi = 1/3", "50,000 draws, k = 2,000", f"{h:.4f}", abs(h - 1.0 / 3.0) < 0.03
+
+    def evt_var_against_exact_quantile() -> Result:
+        from scipy.stats import t as student
+
+        x = pd.Series(student.rvs(4, size=40000 if not fast else 20000, random_state=52) * 0.04)
+        exact = float(-student.ppf(0.001, 4) * 0.04)
+        est = cr.pot(x, 0.95).var(0.999)
+        gap = abs(est / exact - 1.0)
+        return f"exact 99.9% loss of the scaled t(4): {100 * exact:.2f}%", f"{100 * est:.2f}%", f"{100 * gap:.1f}%", gap < 0.1
+
+    def short_call_recovered() -> Result:
+        rng = np.random.default_rng(53)
+        idx = pd.date_range("0100-01-31", periods=30000, freq="ME", unit="s")
+        m = pd.Series(rng.normal(0.005, 0.05, 30000), index=idx)
+        b = cr.bear(m)
+        y = 0.005 - 0.8 * b.fillna(0) * (m > 0) * m + pd.Series(rng.normal(0, 0.02, 30000), index=idx)
+        r = cr.optionality(y, m)
+        got = float(r.coef[r.names.index("B_U_Rm")])
+        return "planted bear-market up-beta -0.8", "30,000 months", f"{got:.3f}", abs(got + 0.8) < 0.05
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -633,6 +671,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Quality", "Quality-adjusted alpha recovers a planted model", quality_adjusted_alpha)
     add("Quality", "Cheapness signal has no look-ahead", cheapness_no_look_ahead)
     add("Quality", "Trap rate follows planted risk", trap_rate_follows_planted_risk)
+    add("Tails", "Generalised Pareto recovers a Student t tail", gpd_recovers_student_t)
+    add("Tails", "Hill estimator recovers a Pareto tail", hill_recovers_pareto)
+    add("Tails", "EVT value at risk against the exact quantile", evt_var_against_exact_quantile)
+    add("Tails", "Daniel-Moskowitz regression recovers a short call", short_call_recovered)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 

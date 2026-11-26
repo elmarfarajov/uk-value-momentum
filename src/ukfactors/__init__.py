@@ -1,3 +1,3 @@
 """Value and momentum in the UK stock market, 1972-2026."""
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
