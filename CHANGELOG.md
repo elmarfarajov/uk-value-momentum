@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.8.0: Risk or mispricing? (Day 8)
+
+### Added
+
+* `ukfactors.pricing`: the GRS test, Fama-MacBeth with Shanken standard errors, macro innovations
+  (three-month rate, term spread, sterling) and factor exposures, before-and-after publication
+  tests, spreads by size group, and rolling pricing errors.
+* Ten charts, the Day 8 note, ADR 0018.
+* Four validation checks (43 in all) and 9 tests.
+
 ## v0.7.0: Crashes and tail risk (Day 7)
 
 ### Added

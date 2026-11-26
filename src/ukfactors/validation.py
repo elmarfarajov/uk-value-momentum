@@ -16,6 +16,7 @@ import pandas as pd
 from . import analysis, industry, momentum, stats, survivorship
 from . import crashes as cr
 from . import lostdecade as ld
+from . import pricing as pr
 from . import quality as qm
 from . import tsmom as tsm
 from .data import store
@@ -636,6 +637,52 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
         got = float(r.coef[r.names.index("B_U_Rm")])
         return "planted bear-market up-beta -0.8", "30,000 months", f"{got:.3f}", abs(got + 0.8) < 0.05
 
+    def grs_size() -> Result:
+        rng = np.random.default_rng(54)
+        sims, t, n = (300 if fast else 1000), 240, 6
+        hits = 0
+        for _ in range(sims):
+            f = rng.normal(0.006, 0.045, (t, 1))
+            y = f @ rng.uniform(0.6, 1.4, (1, n)) + rng.normal(0, 0.03, (t, n))
+            hits += pr.grs(pd.DataFrame(y), pd.DataFrame(f, columns=["F"])).p < 0.05
+        rate = hits / sims
+        return (
+            "rejection rate 5% when all alphas are zero",
+            f"{sims} samples, T = 240, N = 6",
+            f"{rate:.3f}",
+            abs(rate - 0.05) < 0.025,
+        )
+
+    def fama_macbeth_recovers_means() -> Result:
+        rng = np.random.default_rng(55)
+        t, n = 600, 25
+        f = pd.DataFrame(rng.normal([0.005, 0.003], [0.045, 0.03], (t, 2)), columns=["A", "B"])
+        b = rng.uniform(0.2, 1.8, (n, 2))
+        y = pd.DataFrame(f.to_numpy() @ b.T + rng.normal(0, 0.002, (t, n)))
+        fm = pr.fama_macbeth(y, f)
+        gap = float(np.max(np.abs(fm.lambdas[["A", "B"]].to_numpy() - f.mean().to_numpy())))
+        return "traded factors without alphas: lambda = factor mean", "600 months, 25 assets", f"{gap:.1e}", gap < 5e-4
+
+    def size_spreads_rebuild_umd() -> Result:
+        if not store.available(["exeter_6ports_size_mom.zip", "exeter_monthlyfactors.zip"]):
+            return "Exeter UMD = mean of small and big winner-minus-loser", "needs Exeter data", "-", None
+        from .data import exeter
+
+        sp = pr.spread_by_size(exeter.portfolios("6ports_size_mom"), 3)
+        gap = float((sp.mean(axis=1) - exeter.factors()["UMD"]).abs().max())
+        return "Exeter UMD = mean of small and big winner-minus-loser", "429 months", f"{gap:.1e}", gap < 1e-6
+
+    def macro_units() -> Result:
+        if not store.available(["fred_uk_rate.csv", "fred_gilt_yield.csv", "fred_gbpusd.csv"]):
+            return "three-month rate rebuilt in points from the monthly return", "needs FRED data", "-", None
+        from .data import fred
+
+        raw = pd.read_csv(store.path("fred_uk_rate.csv"), na_values=".").dropna()
+        raw.index = pd.to_datetime(raw.iloc[:, 0]) + pd.offsets.MonthEnd(0)
+        rebuilt = 100.0 * ((1.0 + fred.uk_rate()) ** 12 - 1.0)
+        gap = float((rebuilt - raw.iloc[:, 1].astype(float)).abs().max())
+        return "three-month rate rebuilt in points from the monthly return", "FRED, all months", f"{gap:.1e}", gap < 1e-9
+
     add("Statistics", "Newey-West t against statsmodels", nw_vs_statsmodels)
     add("Statistics", "Sharpe ratio standard error (Lo 2002)", sharpe_se_monte_carlo)
     add("Statistics", "Stationary bootstrap coverage", bootstrap_coverage)
@@ -675,6 +722,10 @@ def run_validation(fast: bool = False) -> pd.DataFrame:
     add("Tails", "Hill estimator recovers a Pareto tail", hill_recovers_pareto)
     add("Tails", "EVT value at risk against the exact quantile", evt_var_against_exact_quantile)
     add("Tails", "Daniel-Moskowitz regression recovers a short call", short_call_recovered)
+    add("Pricing", "GRS test has the right size", grs_size)
+    add("Pricing", "Fama-MacBeth recovers factor means", fama_macbeth_recovers_means)
+    add("Pricing", "Exeter's six portfolios rebuild UMD", size_spreads_rebuild_umd)
+    add("Pricing", "Macro rates in the right units", macro_units)
     return pd.DataFrame([c.__dict__ for c in checks])
 
 

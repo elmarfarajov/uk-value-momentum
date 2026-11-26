@@ -150,6 +150,20 @@ Read the full note: [Quality and value traps](docs/notes/quality-and-value-traps
 
 Read the full note: [Crashes and tail risk](docs/notes/crashes-and-tail-risk.md) - 10 charts, 8 tables.
 
+## Day 8: risk or mispricing?
+
+* **No model prices UK size, value and momentum portfolios together:** the GRS test rejects the
+  four-factor model on 31 Exeter portfolios (p = 0.002), though it halves the CAPM's alphas.
+* **Momentum's beta is priced** (Fama-MacBeth lambda 10.0% a year, Shanken t = 2.7), but momentum
+  has no exposure to rate, term-spread or sterling news.
+* **Value shrank after publication** (AQR VAL 8.6% to 0.8% a year after 1993); **momentum did not**.
+* **Momentum earns 14.8% among small stocks and 8.8% among big ones** (difference t = 3.0); value
+  shows no gap. On balance the UK evidence fits mispricing better than risk for momentum.
+
+![Publication](docs/images/rp-publication.png)
+
+Read the full note: [Risk or mispricing?](docs/notes/risk-or-mispricing.md) - 10 charts, 7 tables.
+
 ## Data, honestly
 
 No raw data is in this repository. AQR's, Exeter's and Yahoo's files are theirs to license.
